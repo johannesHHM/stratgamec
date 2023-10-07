@@ -1,5 +1,5 @@
-#include "../include/heros.h"
-#include "../include/units.h"
+#include "heros.h"
+#include "units.h"
 #include <stdlib.h>
 #include <string.h>
 

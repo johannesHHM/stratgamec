@@ -50,6 +50,8 @@ void initUnit (unit *u, unitType t, char n[], char i, color c);
 
 void freeUnit (unit *u);
 
+bool cmpUnits (unit *u1, unit *u2);
+
 void readUnits (unitPrototype *prototypeList, int ht);
 
 #endif

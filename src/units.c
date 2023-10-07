@@ -1,5 +1,6 @@
-#include "../include/units.h"
-#include "../include/heros.h"
+#include "units.h"
+#include "heros.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -48,6 +49,15 @@ freeUnit (unit *u)
   u = NULL;
 }
 
+bool
+cmpUnits (unit *u1, unit *u2)
+{
+  if (!u1 || !u2)
+    return false;
+  return ((u1->type == u2->type) && (strcmp (u1->name, u2->name) == 0)
+          && (u1->color == u2->color));
+}
+
 void
 readUnits (unitPrototype *prototypeList, int ht)
 {
@@ -67,7 +77,8 @@ readUnits (unitPrototype *prototypeList, int ht)
   int records = 0;
   do
     {
-      read = fscanf (file, "%d,%19[^,],%c,%d\n", &prototypeList[records].type,
+      read = fscanf (file, "%d,%19[^,],%c,%d\n",
+                     (int *)&prototypeList[records].type,
                      prototypeList[records].name, &prototypeList[records].icon,
                      &prototypeList[records].strength);
       if (read == 4)
@@ -85,17 +96,4 @@ readUnits (unitPrototype *prototypeList, int ht)
   while (!feof (file));
 
   fclose (file);
-  /**
-  printf("\n%d records read. \n\n", records);
-
-  for (int i = 0; i<records; i++) {
-      printf("%d %s %c %d\n",
-          prototypeList[i].type,
-          prototypeList[i].name,
-          prototypeList[i].icon,
-          prototypeList[i].strength
-      );
-  }
-  printf("\n");
-  **/
 }

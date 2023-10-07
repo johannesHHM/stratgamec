@@ -11,7 +11,7 @@ CFLAGS   := -Wall
 LDFLAGS  := -Llib
 LDLIBS   := -lm
 
-.PHONY: all clean
+.PHONY: all clean run
 
 all: $(EXE)
 
@@ -26,5 +26,8 @@ $(BIN_DIR) $(OBJ_DIR):
 
 clean:
 	@$(RM) -rv $(BIN_DIR) $(OBJ_DIR)
+
+run: $(EXE)
+	./build/game
 
 -include $(OBJ:.o=.d)
