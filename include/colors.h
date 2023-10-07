@@ -3,12 +3,13 @@
 
 #include <stdlib.h>
 
-typedef enum color {
-    red = 0,
-    green = 1,
-    blue = 2
+typedef enum color
+{
+  red = 0,
+  green = 1,
+  blue = 2
 } color;
 
-int randColor();
+int randColor ();
 
 #endif

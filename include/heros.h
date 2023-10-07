@@ -3,21 +3,23 @@
 
 #include "units.h"
 
-typedef enum heroType {
-    paladin,
-    mechanic,
-    wizard
+typedef enum heroType
+{
+  paladin,
+  mechanic,
+  wizard
 } heroType;
 
-typedef struct Hero {
-    heroType type;
-    char name[20];  
-    unitPrototype protoList[3];
+typedef struct Hero
+{
+  heroType type;
+  char name[20];
+  unitPrototype protoList[3];
+  wallType wallType;
 } hero;
 
-hero* newHero(heroType hc, char* n);
+hero *newHero (heroType hc, char *n);
 
-void freeHero(hero* h);
-
+void freeHero (hero *h);
 
 #endif
