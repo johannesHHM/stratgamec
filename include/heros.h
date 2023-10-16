@@ -15,11 +15,14 @@ typedef struct Hero
   heroType type;
   char name[20];
   unitPrototype protoList[3];
-  wallType wallType;
+  unitPrototype protoWall;
+  int level1Wall, level2Wall, level3Wall;
 } hero;
 
 hero *newHero (heroType hc, char *n);
 
 void freeHero (hero *h);
+
+void printHero (hero *h);
 
 #endif

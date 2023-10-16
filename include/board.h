@@ -5,11 +5,17 @@
 
 #include <stdbool.h>
 
+#define WIDTH_C 6
+#define HIGHT_C 8
+
+// TODO maybe make board width & hight custom,
+// aka make board unit** and malloc size from
+// WIDTH and HIGHT
 typedef struct Board
 {
   int WIDTH;
   int HIGHT;
-  unit *board[6][8];
+  unit *board[WIDTH_C][HIGHT_C];
   int backupUnits;
 } board;
 

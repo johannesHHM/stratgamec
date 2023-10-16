@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+// TODO set strength
 unit *
 newUnit (unitType t, char n[], char i, color c)
 {
@@ -12,9 +13,13 @@ newUnit (unitType t, char n[], char i, color c)
   u->type = t;
   strcpy (u->name, n);
   u->icon = i;
+  u->tagIcon = 'n';
   u->color = c;
   u->taggedWall = false;
   u->taggedAttack = false;
+  u->hasFormation = false;
+  u->firstFormation = false;
+
   return u;
 }
 
@@ -25,21 +30,30 @@ newUnitFromProto (unitPrototype *up, color c)
   u->type = up->type;
   strcpy (u->name, up->name);
   u->icon = up->icon;
+  u->tagIcon = 'n';
   u->color = c;
+  u->strength = up->strength;
   u->taggedWall = false;
   u->taggedAttack = false;
+  u->hasFormation = false;
+  u->firstFormation = false;
+
   return u;
 }
 
+// TODO set strength
 void
 initUnit (unit *u, unitType t, char n[], char i, color c)
 {
   u->type = t;
   strcpy (u->name, n);
   u->icon = i;
+  u->tagIcon = 'n';
   u->color = c;
   u->taggedWall = false;
   u->taggedAttack = false;
+  u->hasFormation = false;
+  u->firstFormation = false;
 }
 
 void
@@ -96,4 +110,49 @@ readUnits (unitPrototype *prototypeList, int ht)
   while (!feof (file));
 
   fclose (file);
+}
+
+void
+readWall (unitPrototype *protoWall, int *lvl1Wall, int *lvl2Wall,
+          int *lvl3Wall, int ht)
+{
+  FILE *file;
+
+  char *filename;
+  asprintf (&filename, "data/units/%d/wall", ht);
+  file = fopen (filename, "r");
+  free (filename);
+
+  if (file == NULL)
+    {
+      printf ("Error opening file.\n");
+    }
+
+  int read = 0;
+
+  read = fscanf (file, "%d,%19[^,],%c,%d,%d,%d", (int *)&protoWall->type,
+                 protoWall->name, &protoWall->icon, lvl1Wall, lvl2Wall,
+                 lvl3Wall);
+
+  protoWall->strength = *lvl1Wall;
+
+  if (read != 4 && !feof (file))
+    {
+      printf ("File format incorrect.\n");
+    }
+
+  if (ferror (file))
+    {
+      printf ("Error reading file.\n");
+    }
+
+  fclose (file);
+}
+
+void
+printUnit (unit *u)
+{
+  printf ("Unit: %s\ni: %c c: %d\ntagWall: %d tagAtc: %d hasFrm: %d\n",
+          u->name, u->icon, u->color, u->taggedWall, u->taggedAttack,
+          u->hasFormation);
 }

@@ -11,29 +11,50 @@
 int
 main ()
 {
+  int seed = time (NULL);
+  // seed = 1697274596;
   printf ("\nRunning Main\n\n");
-  srand (time (NULL));
+  printf ("seed: %d\n", seed);
+  srand (seed);
   board *b = newBoard ();
 
-  hero *hero = newHero (wizard, "Loprix");
+  hero *hero = newHero (paladin, "Uther");
+  printHero (hero);
 
-  // unit* u1 = newUnitFromProto(&paladinHero->protoList[0], 0);
-  // unit* u2 = newUnitFromProto(&paladinHero->protoList[0], 0);
-  // unit* u3 = newUnitFromProto(&paladinHero->protoList[0], 0);
+  unit *redArcher0 = newUnitFromProto (&hero->protoList[0], 0);
+  unit *redArcher1 = newUnitFromProto (&hero->protoList[0], 0);
+  unit *redArcher2 = newUnitFromProto (&hero->protoList[0], 0);
+  unit *redArcher3 = newUnitFromProto (&hero->protoList[0], 0);
+  unit *redArcher4 = newUnitFromProto (&hero->protoList[0], 0);
 
-  // sendUnit(b, u1, 0);
-  // sendUnit(b, u2, 0);
-  // sendUnit(b, u3, 0);
+  unit *u6 = newUnitFromProto (&hero->protoList[0], 1);
+  unit *u7 = newUnitFromProto (&hero->protoList[0], 1);
 
-  sendBackupUnits (b, 30, hero);
+  sendUnit (b, redArcher0, 0);
+  sendUnit (b, redArcher1, 0);
+
+  // moveUnit (b, 1, 0, 2, 0);
+  // printBoard (b);
+  // exit (0);
+
+  sendUnit (b, redArcher2, 0);
+
+  sendUnit (b, u6, 1);
+  sendUnit (b, u7, 2);
+
+  sendUnit (b, redArcher3, 1);
+  sendUnit (b, redArcher4, 2);
+
+  // sendBackupUnits (b, 35, hero);
+
+  printBoard (b);
 
   tagWalls (b);
   tagAttacks3x1 (b);
 
   printBoard (b);
 
-  tagWalls (b);
-  tagAttacks3x1 (b);
+  makeWalls (b, hero);
 
   printBoard (b);
 
