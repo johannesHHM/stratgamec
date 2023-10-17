@@ -11,7 +11,8 @@ newHero (heroType hc, char *n)
   hero *h = malloc (sizeof (hero));
   h->type = hc;
   strcpy (h->name, n);
-  readUnits (h->protoList, hc);
+  readUnits (h->unitProtoList, hc);
+  readFormations3x1 (h->formationProtoList, hc);
   readWall (&h->protoWall, &h->level1Wall, &h->level2Wall, &h->level3Wall, hc);
   return h;
 }
@@ -21,6 +22,18 @@ freeHero (hero *h)
 {
   free (h);
   h = NULL;
+}
+
+formationPrototype3x1 *
+getFormationPrototype (hero *hero, unitType type)
+{
+  for (int i = 0; i < UNIT_COUNT; i++)
+    {
+      if (hero->formationProtoList[i].type == type)
+        {
+          return &hero->formationProtoList[i];
+        }
+    }
 }
 
 void

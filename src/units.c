@@ -56,11 +56,29 @@ initUnit (unit *u, unitType t, char n[], char i, color c)
   u->firstFormation = false;
 }
 
+formation3x1 *
+newFormationFromProto3x1 (formationPrototype3x1 *fp, color c)
+{
+  formation3x1 *f = malloc (sizeof (formation3x1));
+  f->type = fp->type;
+  f->chargeTimer = fp->chargeTimer;
+  f->power = fp->power;
+
+  return f;
+}
+
 void
 freeUnit (unit *u)
 {
   free (u);
   u = NULL;
+}
+
+void
+freeFormation3x1 (formation3x1 *f)
+{
+  free (f);
+  f = NULL;
 }
 
 bool
@@ -78,7 +96,7 @@ readUnits (unitPrototype *prototypeList, int ht)
   FILE *file;
 
   char *filename;
-  asprintf (&filename, "data/units/%d/units", ht);
+  asprintf (&filename, "data/hero/%d/units", ht);
   file = fopen (filename, "r");
   free (filename);
 
@@ -113,13 +131,52 @@ readUnits (unitPrototype *prototypeList, int ht)
 }
 
 void
+readFormations3x1 (formationPrototype3x1 *prototypeList, int ht)
+{
+  FILE *file;
+
+  char *filename;
+  asprintf (&filename, "data/hero/%d/formations3x1", ht);
+  file = fopen (filename, "r");
+  free (filename);
+
+  if (file == NULL)
+    {
+      printf ("Error opening file.\n");
+    }
+
+  int read = 0;
+  int records = 0;
+  do
+    {
+      read = fscanf (file, "%d,%d,%d\n", (int *)&prototypeList[records].type,
+                     (int *)&prototypeList[records].chargeTimer,
+                     (int *)&prototypeList[records].power);
+      if (read == 4)
+        records++;
+      if (read != 4 && !feof (file))
+        {
+          printf ("File format incorrect.\n");
+        }
+
+      if (ferror (file))
+        {
+          printf ("Error reading file.\n");
+        }
+    }
+  while (!feof (file));
+
+  fclose (file);
+}
+
+void
 readWall (unitPrototype *protoWall, int *lvl1Wall, int *lvl2Wall,
           int *lvl3Wall, int ht)
 {
   FILE *file;
 
   char *filename;
-  asprintf (&filename, "data/units/%d/wall", ht);
+  asprintf (&filename, "data/hero/%d/wall", ht);
   file = fopen (filename, "r");
   free (filename);
 

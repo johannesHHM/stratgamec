@@ -2,10 +2,12 @@
 #include "heros.h"
 #include "units.h"
 
+#include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 // TODO change backup units to hero ?
 board *
@@ -104,7 +106,7 @@ sendBackupUnits (board *b, int amount, hero *h)
       bool response = false;
       while (!response)
         {
-          unitPrototype *up = &h->protoList[rand () % 3];
+          unitPrototype *up = &h->unitProtoList[rand () % 3];
           unit *u = newUnitFromProto (up, randColor ());
           int random = rand () % b->WIDTH;
           response = sendUnit (b, u, random);
@@ -291,9 +293,8 @@ makeWalls (board *b, hero *h)
       for (int x = 0; x < b->HIGHT; ++x)
         {
           if (b->board[x][y] == NULL)
-            {
-              continue;
-            }
+            continue;
+
           if (b->board[x][y]->taggedWall)
             {
               if (!b->board[x][y]->taggedAttack)
@@ -341,6 +342,36 @@ sinkWalls (board *b)
                   updated = true;
                 }
             }
+        }
+    }
+}
+
+void
+makeAttack3x1 (board *b, hero *h)
+{
+  for (int y = 0; y < b->WIDTH; y++)
+    {
+      for (int x = 0; x < b->HIGHT - 2; x++)
+        {
+          if (!b->board[x][y] || !b->board[x][y]->firstFormation)
+            continue;
+
+          formation3x1 *f;
+          formationPrototype3x1 *fp;
+
+          fp = getFormationPrototype (h, b->board[x][y]->type);
+          f = newFormationFromProto3x1 (fp, b->board[x][y]->color);
+
+          b->board[x][y]->formation3x1 = f;
+          b->board[x][y]->firstFormation = true;
+          b->board[x][y]->hasFormation = true;
+
+          b->board[x + 1][y]->hasFormation = true;
+          b->board[x + 2][y]->hasFormation = true;
+
+          b->board[x][y]->tagIcon = toupper (b->board[x][y]->icon);
+          b->board[x + 1][y]->tagIcon = toupper (b->board[x + 1][y]->icon);
+          b->board[x + 2][y]->tagIcon = toupper (b->board[x + 2][y]->icon);
         }
     }
 }

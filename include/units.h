@@ -37,7 +37,7 @@ typedef struct Unit
   bool hasFormation;
   bool firstFormation;
 
-  formation3x1 *formation;
+  formation3x1 *formation3x1;
 } unit;
 
 typedef struct UnitPrototype
@@ -48,10 +48,16 @@ typedef struct UnitPrototype
   int strength;
 } unitPrototype;
 
+typedef struct FormationPrototype3x1
+{
+  unitType type;
+  int chargeTimer;
+  int power;
+} formationPrototype3x1;
+
 typedef struct Formation3x1
 {
   unitType type;
-  unit *units[3];
   int chargeTimer;
   int power;
 } formation3x1;
@@ -66,6 +72,11 @@ bool cmpUnits (unit *u1, unit *u2);
 void readUnits (unitPrototype *prototypeList, int ht);
 void readWall (unitPrototype *protoWall, int *lvl1Wall, int *lvl2Wall,
                int *lvl3Wall, int ht);
+
+void readFormations3x1 (formationPrototype3x1 *prototypeList, int ht);
+
+formation3x1 *newFormationFromProto3x1 (formationPrototype3x1 *fp, color c);
+void freeFormation3x1 (formation3x1 *f);
 
 void printUnit (unit *u);
 #endif

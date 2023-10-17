@@ -33,6 +33,8 @@ void tagWalls (board *b);
 
 void makeWalls (board *b, hero *h);
 
+void sinkWalls (board *b);
+
 void printBoard (board *b);
 
 #endif
