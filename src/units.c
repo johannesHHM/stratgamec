@@ -152,11 +152,19 @@ readFormations3x1 (formationPrototype3x1 *prototypeList, int ht)
       read = fscanf (file, "%d,%d,%d\n", (int *)&prototypeList[records].type,
                      (int *)&prototypeList[records].chargeTimer,
                      (int *)&prototypeList[records].power);
-      if (read == 4)
-        records++;
-      if (read != 4 && !feof (file))
+      if (read == 3)
+        {
+          printf ("Its 3!");
+          records++;
+        }
+      if (read != 3 && !feof (file))
         {
           printf ("File format incorrect.\n");
+          printf ("%d  %d\n", ht, records);
+          printf ("type: %d, charge: %d, power: %d\n",
+                  prototypeList[records].type,
+                  prototypeList[records].chargeTimer,
+                  prototypeList[records].power);
         }
 
       if (ferror (file))
@@ -193,7 +201,7 @@ readWall (unitPrototype *protoWall, int *lvl1Wall, int *lvl2Wall,
 
   protoWall->strength = *lvl1Wall;
 
-  if (read != 4 && !feof (file))
+  if (read != 6 && !feof (file))
     {
       printf ("File format incorrect.\n");
     }

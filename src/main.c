@@ -63,7 +63,7 @@ int
 main ()
 {
   int seed = time (NULL);
-  seed = 1697547334;
+  seed = 1697550915;
   printf ("\nRunning Main\n\n");
   printf ("seed: %d\n", seed);
   srand (seed);
