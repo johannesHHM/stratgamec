@@ -153,10 +153,8 @@ readFormations3x1 (formationPrototype3x1 *prototypeList, int ht)
                      (int *)&prototypeList[records].chargeTimer,
                      (int *)&prototypeList[records].power);
       if (read == 3)
-        {
-          printf ("Its 3!");
-          records++;
-        }
+        records++;
+
       if (read != 3 && !feof (file))
         {
           printf ("File format incorrect.\n");

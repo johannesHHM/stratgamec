@@ -49,7 +49,10 @@ printBoard (board *b)
                 }
               else
                 {
-                  printf (" %c ", b->board[x][y]->tagIcon);
+                  if (b->board[x][y]->firstFormation)
+                    printf (" %cf", b->board[x][y]->tagIcon);
+                  else
+                    printf (" %c ", b->board[x][y]->tagIcon);
                 }
             }
           else
@@ -332,7 +335,7 @@ sinkWalls (board *b)
         {
           for (int x = 0; x < b->HIGHT - 1; ++x)
             {
-              if (!(b->board[x][y] && b->board[x + 1][y]))
+              if (!b->board[x][y] || !b->board[x + 1][y])
                 continue;
 
               if ((int)b->board[x][y]->type > 9
@@ -372,6 +375,34 @@ makeAttack3x1 (board *b, hero *h)
           b->board[x][y]->tagIcon = toupper (b->board[x][y]->icon);
           b->board[x + 1][y]->tagIcon = toupper (b->board[x + 1][y]->icon);
           b->board[x + 2][y]->tagIcon = toupper (b->board[x + 2][y]->icon);
+        }
+    }
+}
+
+void
+sinkAttacks3x1 (board *b)
+{
+  bool updated = true;
+  while (updated)
+    {
+      updated = false;
+      for (int y = 0; y < b->WIDTH; ++y)
+        {
+          for (int x = 0; x < b->HIGHT - 1; ++x)
+            {
+              if (!b->board[x][y] || !b->board[x + 1][y])
+                continue;
+
+              if ((int)b->board[x][y]->type < 10)
+                continue;
+
+              if (!b->board[x][y]->hasFormation
+                  && b->board[x + 1][y]->hasFormation)
+                {
+                  swapUnits (b, x, y, x + 1, y);
+                  updated = true;
+                }
+            }
         }
     }
 }

@@ -34,6 +34,7 @@ void tagWalls (board *b);
 void makeWalls (board *b, hero *h);
 
 void sinkWalls (board *b);
+void sinkAttacks3x1 (board *b);
 
 void printBoard (board *b);
 
