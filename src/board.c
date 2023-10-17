@@ -245,6 +245,19 @@ moveUnit (board *b, int x0, int y0, int x1, int y1)
   return true;
 }
 
+bool
+swapUnits (board *b, int x0, int y0, int x1, int y1)
+{
+  if (!b->board[x0][y0])
+    return false;
+  if (!b->board[x1][y1])
+    return false;
+  unit *tmpUnit = b->board[x1][y1];
+  b->board[x1][y1] = b->board[x0][y0];
+  b->board[x0][y0] = tmpUnit;
+  return true;
+}
+
 int
 handleDoubleTag (board *b, int x, int y)
 {
@@ -301,6 +314,31 @@ makeWalls (board *b, hero *h)
                       wall = newUnitFromProto (&h->protoWall, def);
                       b->board[wallX][y] = wall;
                     }
+                }
+            }
+        }
+    }
+}
+
+void
+sinkWalls (board *b)
+{
+  bool updated = true;
+  while (updated)
+    {
+      updated = false;
+      for (int y = 0; y < b->WIDTH; ++y)
+        {
+          for (int x = 0; x < b->HIGHT - 1; ++x)
+            {
+              if (!(b->board[x][y] && b->board[x + 1][y]))
+                continue;
+
+              if ((int)b->board[x][y]->type > 9
+                  && (int)b->board[x + 1][y]->type < 10)
+                {
+                  swapUnits (b, x, y, x + 1, y);
+                  updated = true;
                 }
             }
         }

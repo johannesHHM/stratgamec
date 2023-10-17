@@ -9,9 +9,9 @@ typedef struct Formation3x1 formation3x1;
 
 typedef enum unitType
 {
-  paladinWall = 010,
-  mechanicWall = 020,
-  wizardWall = 030,
+  paladinWall = 1,
+  mechanicWall = 2,
+  wizardWall = 3,
 
   spearman = 011,
   swordman = 012,
