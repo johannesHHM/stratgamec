@@ -27,6 +27,7 @@ unit *
 newUnitFromProto (unitPrototype *up, color c)
 {
   unit *u = malloc (sizeof (unit));
+  u->occupied = true;
   u->type = up->type;
   strcpy (u->name, up->name);
   u->icon = up->icon;
@@ -37,6 +38,25 @@ newUnitFromProto (unitPrototype *up, color c)
   u->taggedAttack = false;
   u->hasFormation = false;
   u->firstFormation = false;
+
+  return u;
+}
+
+unit
+initUnitFromProto (unitPrototype *up, color c)
+{
+  unit u;
+  u.occupied = true;
+  u.type = up->type;
+  strcpy (u.name, up->name);
+  u.icon = up->icon;
+  u.tagIcon = 'n';
+  u.color = c;
+  u.strength = up->strength;
+  u.taggedWall = false;
+  u.taggedAttack = false;
+  u.hasFormation = false;
+  u.firstFormation = false;
 
   return u;
 }

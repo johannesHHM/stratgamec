@@ -23,6 +23,7 @@ typedef enum unitType
 
 typedef struct Unit
 {
+  bool occupied;
   unitType type;
   char name[20];
   char icon;
@@ -64,6 +65,7 @@ typedef struct Formation3x1
 
 unit *newUnit (unitType t, char n[], char i, color c);
 unit *newUnitFromProto (unitPrototype *up, color c);
+unit initUnitFromProto (unitPrototype *up, color c);
 void initUnit (unit *u, unitType t, char n[], char i, color c);
 
 void freeUnit (unit *u);

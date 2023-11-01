@@ -15,7 +15,7 @@ typedef struct Board
 {
   int WIDTH;
   int HIGHT;
-  unit *board[WIDTH_C][HIGHT_C];
+  unit board[WIDTH_C][HIGHT_C];
   int backupUnits;
 } board;
 
@@ -23,7 +23,7 @@ board *newBoard (int maxUnits);
 
 void freeBoard (board *b);
 
-bool sendUnit (board *b, unit *u, int y);
+bool sendUnit (board *b, unit u, int y);
 bool removeUnit (board *b, int x, int y);
 bool sendBackupUnits (board *b, int amount, hero *h);
 

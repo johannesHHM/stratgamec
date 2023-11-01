@@ -12,20 +12,20 @@
 void
 test (board *b, hero *h)
 {
-  unit *redArcher0 = newUnitFromProto (&h->unitProtoList[0], 0);
-  unit *redArcher1 = newUnitFromProto (&h->unitProtoList[0], 0);
-  unit *redArcher2 = newUnitFromProto (&h->unitProtoList[0], 0);
-  unit *redArcher3 = newUnitFromProto (&h->unitProtoList[0], 0);
-  unit *redArcher4 = newUnitFromProto (&h->unitProtoList[0], 0);
+  unit redArcher0 = initUnitFromProto (&h->unitProtoList[0], 0);
+  unit redArcher1 = initUnitFromProto (&h->unitProtoList[0], 0);
+  unit redArcher2 = initUnitFromProto (&h->unitProtoList[0], 0);
+  unit redArcher3 = initUnitFromProto (&h->unitProtoList[0], 0);
+  unit redArcher4 = initUnitFromProto (&h->unitProtoList[0], 0);
 
-  unit *greenArcher0 = newUnitFromProto (&h->unitProtoList[0], 1);
-  unit *greenArcher1 = newUnitFromProto (&h->unitProtoList[0], 1);
-  unit *greenArcher2 = newUnitFromProto (&h->unitProtoList[0], 1);
-  unit *greenArcher3 = newUnitFromProto (&h->unitProtoList[0], 1);
+  unit greenArcher0 = initUnitFromProto (&h->unitProtoList[0], 1);
+  unit greenArcher1 = initUnitFromProto (&h->unitProtoList[0], 1);
+  unit greenArcher2 = initUnitFromProto (&h->unitProtoList[0], 1);
+  unit greenArcher3 = initUnitFromProto (&h->unitProtoList[0], 1);
 
-  // unit *blueArcher0 = newUnitFromProto (&h->unitProtoList[0], 2);
-  // unit *blueArcher1 = newUnitFromProto (&h->unitProtoList[0], 2);
-  // unit *blueArcher2 = newUnitFromProto (&h->unitProtoList[0], 2);
+  // unit blueArcher0 = initUnitFromProto (&h->unitProtoList[0], 2);
+  // unit blueArcher1 = initUnitFromProto (&h->unitProtoList[0], 2);
+  // unit blueArcher2 = initUnitFromProto (&h->unitProtoList[0], 2);
 
   sendUnit (b, redArcher0, 0);
   sendUnit (b, redArcher1, 0);

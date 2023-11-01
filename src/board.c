@@ -20,7 +20,7 @@ newBoard (int maxUnits)
     {
       for (int y = 0; y < b->WIDTH; ++y)
         {
-          b->board[x][y] = NULL;
+          b->board[x][y].occupied = false;
         }
     }
   b->backupUnits = maxUnits;
@@ -30,14 +30,6 @@ newBoard (int maxUnits)
 void
 freeBoard (board *b)
 {
-  for (int x = 0; x < b->HIGHT; ++x)
-    {
-      for (int y = 0; y < b->WIDTH; ++y)
-        {
-          if (b->board[x][y])
-            freeUnit (b->board[x][y]);
-        }
-    }
   free (b);
   b = NULL;
 }
@@ -55,19 +47,19 @@ printBoard (board *b)
       printf ("\n");
       for (int y = 0; y < b->WIDTH; ++y)
         {
-          if (b->board[x][y])
+          if (b->board[x][y].occupied)
             {
-              setPrintColor (b->board[x][y]->color);
-              if (b->board[x][y]->tagIcon == 'n')
+              setPrintColor (b->board[x][y].color);
+              if (b->board[x][y].tagIcon == 'n')
                 {
-                  printf (" %c ", b->board[x][y]->icon);
+                  printf (" %c ", b->board[x][y].icon);
                 }
               else
                 {
-                  if (b->board[x][y]->firstFormation)
-                    printf (" %cf", b->board[x][y]->tagIcon);
+                  if (b->board[x][y].firstFormation)
+                    printf (" %cf", b->board[x][y].tagIcon);
                   else
-                    printf (" %c ", b->board[x][y]->tagIcon);
+                    printf (" %c ", b->board[x][y].tagIcon);
                 }
             }
           else
@@ -82,9 +74,9 @@ printBoard (board *b)
 }
 
 bool
-placeUnit (board *b, unit *u, int x, int y)
+placeUnit (board *b, unit u, int x, int y)
 {
-  if (b->board[x][y] != NULL)
+  if (b->board[x][y].occupied)
     {
       return false;
     }
@@ -93,22 +85,21 @@ placeUnit (board *b, unit *u, int x, int y)
 }
 
 bool
-sendUnit (board *b, unit *u, int y)
+sendUnit (board *b, unit u, int y)
 {
-  if (b->board[b->HIGHT - 1][y] != NULL)
+  if (b->board[b->HIGHT - 1][y].occupied)
     {
       return false;
     }
   int x = b->HIGHT - 1;
-  while (x >= 0 && b->board[x][y] == NULL)
+  while (x >= 0 && !b->board[x][y].occupied)
     {
       x--;
     }
   b->board[x + 1][y] = u;
   if (checkTagsNeeded (b))
     {
-      freeUnit (u);
-      b->board[x + 1][y] = NULL;
+      b->board[x + 1][y].occupied = false;
       return false;
     }
   return true;
@@ -124,8 +115,8 @@ sendBackupUnits (board *b, int amount, hero *h)
       bool response = false;
       while (!response)
         {
-          unitPrototype *up = &h->unitProtoList[rand () % 3];
-          unit *u = newUnitFromProto (up, randColor ());
+          unit u = initUnitFromProto (&h->unitProtoList[rand () % 3],
+                                      randColor ());
           int random = rand () % b->WIDTH;
           response = sendUnit (b, u, random);
           if (response)
@@ -138,10 +129,9 @@ sendBackupUnits (board *b, int amount, hero *h)
 bool
 removeUnit (board *b, int x, int y)
 {
-  if (!b->board[x][y])
+  if (!b->board[x][y].occupied)
     return false;
-  freeUnit (b->board[x][y]);
-  b->board[x][y] = NULL;
+  b->board[x][y].occupied = false;
   return true;
 }
 
@@ -152,19 +142,20 @@ tagWalls (board *b)
     {
       for (int y = 0; y < b->WIDTH - 2; ++y)
         {
-          if (!b->board[x][y])
+          if (!b->board[x][y].occupied || !b->board[x][y + 1].occupied
+              || !b->board[x][y + 2].occupied)
             continue;
-          if (cmpUnits (b->board[x][y], b->board[x][y + 1])
-              && cmpUnits (b->board[x][y], b->board[x][y + 2]))
+          if (cmpUnits (&b->board[x][y], &b->board[x][y + 1])
+              && cmpUnits (&b->board[x][y], &b->board[x][y + 2]))
             {
-              b->board[x][y]->taggedWall = true;
-              b->board[x][y]->tagIcon = 'W';
+              b->board[x][y].taggedWall = true;
+              b->board[x][y].tagIcon = 'W';
 
-              b->board[x][y + 1]->taggedWall = true;
-              b->board[x][y + 1]->tagIcon = 'W';
+              b->board[x][y + 1].taggedWall = true;
+              b->board[x][y + 1].tagIcon = 'W';
 
-              b->board[x][y + 2]->taggedWall = true;
-              b->board[x][y + 2]->tagIcon = 'W';
+              b->board[x][y + 2].taggedWall = true;
+              b->board[x][y + 2].tagIcon = 'W';
             }
         }
     }
@@ -177,33 +168,34 @@ tagAttacks3x1 (board *b)
     {
       for (int x = 0; x < b->HIGHT - 2; ++x)
         {
-          if (!b->board[x][y])
+          if (!b->board[x][y].occupied || !b->board[x + 1][y].occupied
+              || !b->board[x + 2][y].occupied)
             continue;
-          if (cmpUnits (b->board[x][y], b->board[x + 1][y])
-              && cmpUnits (b->board[x][y], b->board[x + 2][y])
-              && !b->board[x][y]->taggedAttack
-              && !b->board[x + 1][y]->taggedAttack
-              && !b->board[x + 2][y]->taggedAttack)
+          if (cmpUnits (&b->board[x][y], &b->board[x + 1][y])
+              && cmpUnits (&b->board[x][y], &b->board[x + 2][y])
+              && !b->board[x][y].taggedAttack
+              && !b->board[x + 1][y].taggedAttack
+              && !b->board[x + 2][y].taggedAttack)
             {
-              b->board[x][y]->taggedAttack = true;
-              if (b->board[x][y]->tagIcon == 'n')
-                b->board[x][y]->tagIcon = 'X';
-              else if (b->board[x][y]->tagIcon == 'W')
-                b->board[x][y]->tagIcon = 'D';
+              b->board[x][y].taggedAttack = true;
+              if (b->board[x][y].tagIcon == 'n')
+                b->board[x][y].tagIcon = 'X';
+              else if (b->board[x][y].tagIcon == 'W')
+                b->board[x][y].tagIcon = 'D';
 
-              b->board[x][y]->firstFormation = true;
+              b->board[x][y].firstFormation = true;
 
-              b->board[x + 1][y]->taggedAttack = true;
-              if (b->board[x + 1][y]->tagIcon == 'n')
-                b->board[x + 1][y]->tagIcon = 'X';
-              else if (b->board[x + 1][y]->tagIcon == 'W')
-                b->board[x + 1][y]->tagIcon = 'D';
+              b->board[x + 1][y].taggedAttack = true;
+              if (b->board[x + 1][y].tagIcon == 'n')
+                b->board[x + 1][y].tagIcon = 'X';
+              else if (b->board[x + 1][y].tagIcon == 'W')
+                b->board[x + 1][y].tagIcon = 'D';
 
-              b->board[x + 2][y]->taggedAttack = true;
-              if (b->board[x + 2][y]->tagIcon == 'n')
-                b->board[x + 2][y]->tagIcon = 'X';
-              else if (b->board[x + 2][y]->tagIcon == 'W')
-                b->board[x + 2][y]->tagIcon = 'D';
+              b->board[x + 2][y].taggedAttack = true;
+              if (b->board[x + 2][y].tagIcon == 'n')
+                b->board[x + 2][y].tagIcon = 'X';
+              else if (b->board[x + 2][y].tagIcon == 'W')
+                b->board[x + 2][y].tagIcon = 'D';
             }
         }
     }
@@ -216,10 +208,11 @@ checkWall (board *b)
     {
       for (int y = 0; y < b->WIDTH - 2; ++y)
         {
-          if (!b->board[x][y])
+          if (!b->board[x][y].occupied || !b->board[x][y + 1].occupied
+              || !b->board[x][y + 2].occupied)
             continue;
-          if (cmpUnits (b->board[x][y], b->board[x][y + 1])
-              && cmpUnits (b->board[x][y], b->board[x][y + 2]))
+          if (cmpUnits (&b->board[x][y], &b->board[x][y + 1])
+              && cmpUnits (&b->board[x][y], &b->board[x][y + 2]))
             return true;
         }
     }
@@ -233,13 +226,14 @@ checkAttack3x1 (board *b)
     {
       for (int x = 0; x < b->HIGHT - 2; ++x)
         {
-          if (!b->board[x][y])
+          if (!b->board[x][y].occupied || !b->board[x + 1][y].occupied
+              || !b->board[x + 2][y].occupied)
             continue;
-          if (cmpUnits (b->board[x][y], b->board[x + 1][y])
-              && cmpUnits (b->board[x][y], b->board[x + 2][y])
-              && !b->board[x][y]->taggedAttack
-              && !b->board[x + 1][y]->taggedAttack
-              && !b->board[x + 2][y]->taggedAttack)
+          if (cmpUnits (&b->board[x][y], &b->board[x + 1][y])
+              && cmpUnits (&b->board[x][y], &b->board[x + 2][y])
+              && !b->board[x][y].taggedAttack
+              && !b->board[x + 1][y].taggedAttack
+              && !b->board[x + 2][y].taggedAttack)
             return true;
         }
     }
@@ -256,23 +250,23 @@ checkTagsNeeded (board *b)
 bool
 moveUnit (board *b, int x0, int y0, int x1, int y1)
 {
-  if (!b->board[x0][y0])
+  if (!b->board[x0][y0].occupied)
     return false;
-  if (b->board[x1][y1])
+  if (b->board[x1][y1].occupied)
     return false;
   b->board[x1][y1] = b->board[x0][y0];
-  b->board[x0][y0] = NULL;
+  b->board[x0][y0].occupied = false;
   return true;
 }
 
 bool
 swapUnits (board *b, int x0, int y0, int x1, int y1)
 {
-  if (!b->board[x0][y0])
+  if (!b->board[x0][y0].occupied)
     return false;
-  if (!b->board[x1][y1])
+  if (!b->board[x1][y1].occupied)
     return false;
-  unit *tmpUnit = b->board[x1][y1];
+  unit tmpUnit = b->board[x1][y1];
   b->board[x1][y1] = b->board[x0][y0];
   b->board[x0][y0] = tmpUnit;
   return true;
@@ -281,16 +275,16 @@ swapUnits (board *b, int x0, int y0, int x1, int y1)
 int
 handleDoubleTag (board *b, int x, int y)
 {
-  b->board[x][y]->taggedWall = false;
-  b->board[x][y]->tagIcon = 'X';
+  b->board[x][y].taggedWall = false;
+  b->board[x][y].tagIcon = 'X';
 
-  if (b->board[b->HIGHT - 1][y])
+  if (b->board[b->HIGHT - 1][y].occupied)
     return -1;
 
   int xFormStart;
   for (int i = x; i >= 0; i--)
     {
-      if (b->board[i][y]->firstFormation)
+      if (b->board[i][y].firstFormation)
         {
           xFormStart = i;
           break;
@@ -310,16 +304,16 @@ makeWalls (board *b, hero *h)
     {
       for (int x = 0; x < b->HIGHT; ++x)
         {
-          if (b->board[x][y] == NULL)
+          if (!b->board[x][y].occupied)
             continue;
 
-          if (b->board[x][y]->taggedWall)
+          if (b->board[x][y].taggedWall)
             {
-              if (!b->board[x][y]->taggedAttack)
+              if (!b->board[x][y].taggedAttack)
                 {
                   removeUnit (b, x, y);
-                  unit *wall;
-                  wall = newUnitFromProto (&h->protoWall, def);
+                  unit wall;
+                  wall = initUnitFromProto (&h->protoWall, def);
                   b->board[x][y] = wall;
                 }
               else
@@ -329,8 +323,8 @@ makeWalls (board *b, hero *h)
                   if (wallX > -1)
                     {
                       removeUnit (b, wallX, y);
-                      unit *wall;
-                      wall = newUnitFromProto (&h->protoWall, def);
+                      unit wall;
+                      wall = initUnitFromProto (&h->protoWall, def);
                       b->board[wallX][y] = wall;
                     }
                 }
@@ -350,11 +344,11 @@ sinkWalls (board *b)
         {
           for (int x = 0; x < b->HIGHT - 1; ++x)
             {
-              if (!b->board[x][y] || !b->board[x + 1][y])
+              if (!b->board[x][y].occupied || !b->board[x + 1][y].occupied)
                 continue;
 
-              if ((int)b->board[x][y]->type > 9
-                  && (int)b->board[x + 1][y]->type < 10)
+              if ((int)b->board[x][y].type > 9
+                  && (int)b->board[x + 1][y].type < 10)
                 {
                   swapUnits (b, x, y, x + 1, y);
                   updated = true;
@@ -371,25 +365,25 @@ makeAttacks3x1 (board *b, hero *h)
     {
       for (int x = 0; x < b->HIGHT - 2; x++)
         {
-          if (!b->board[x][y] || !b->board[x][y]->firstFormation)
+          if (!b->board[x][y].occupied || !b->board[x][y].firstFormation)
             continue;
 
           formation3x1 *f;
           formationPrototype3x1 *fp;
 
-          fp = getFormationPrototype (h, b->board[x][y]->type);
-          f = newFormationFromProto3x1 (fp, b->board[x][y]->color);
+          fp = getFormationPrototype (h, b->board[x][y].type);
+          f = newFormationFromProto3x1 (fp, b->board[x][y].color);
 
-          b->board[x][y]->formation3x1 = f;
-          b->board[x][y]->firstFormation = true;
-          b->board[x][y]->hasFormation = true;
+          b->board[x][y].formation3x1 = f;
+          b->board[x][y].firstFormation = true;
+          b->board[x][y].hasFormation = true;
 
-          b->board[x + 1][y]->hasFormation = true;
-          b->board[x + 2][y]->hasFormation = true;
+          b->board[x + 1][y].hasFormation = true;
+          b->board[x + 2][y].hasFormation = true;
 
-          b->board[x][y]->tagIcon = toupper (b->board[x][y]->icon);
-          b->board[x + 1][y]->tagIcon = toupper (b->board[x + 1][y]->icon);
-          b->board[x + 2][y]->tagIcon = toupper (b->board[x + 2][y]->icon);
+          b->board[x][y].tagIcon = toupper (b->board[x][y].icon);
+          b->board[x + 1][y].tagIcon = toupper (b->board[x + 1][y].icon);
+          b->board[x + 2][y].tagIcon = toupper (b->board[x + 2][y].icon);
         }
     }
 }
@@ -405,14 +399,14 @@ sinkAttacks3x1 (board *b)
         {
           for (int x = 0; x < b->HIGHT - 1; ++x)
             {
-              if (!b->board[x][y] || !b->board[x + 1][y])
+              if (!b->board[x][y].occupied || !b->board[x + 1][y].occupied)
                 continue;
 
-              if ((int)b->board[x][y]->type < 10)
+              if ((int)b->board[x][y].type < 10)
                 continue;
 
-              if (!b->board[x][y]->hasFormation
-                  && b->board[x + 1][y]->hasFormation)
+              if (!b->board[x][y].hasFormation
+                  && b->board[x + 1][y].hasFormation)
                 {
                   swapUnits (b, x, y, x + 1, y);
                   updated = true;
