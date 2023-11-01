@@ -20,9 +20,11 @@ typedef struct Hero
   formationPrototype3x1 formationProtoList[UNIT_COUNT];
   unitPrototype protoWall;
   int level1Wall, level2Wall, level3Wall;
+
+  int maxUnits;
 } hero;
 
-hero *newHero (heroType hc, char *n);
+hero *newHero (heroType hc, char *n, int maxUnits);
 
 void freeHero (hero *h);
 

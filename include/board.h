@@ -19,7 +19,10 @@ typedef struct Board
   int backupUnits;
 } board;
 
-board *newBoard ();
+board *newBoard (int maxUnits);
+
+void freeBoard (board *b);
+
 bool sendUnit (board *b, unit *u, int y);
 bool removeUnit (board *b, int x, int y);
 bool sendBackupUnits (board *b, int amount, hero *h);
@@ -35,6 +38,8 @@ void makeWalls (board *b, hero *h);
 
 void sinkWalls (board *b);
 void sinkAttacks3x1 (board *b);
+
+void makeAttacks3x1 (board *b, hero *h);
 
 void printBoard (board *b);
 

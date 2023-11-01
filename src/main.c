@@ -1,5 +1,6 @@
 #include "board.h"
 #include "heros.h"
+#include "match.h"
 #include "units.h"
 
 #include <stdbool.h>
@@ -67,38 +68,14 @@ main ()
   printf ("\nRunning Main\n\n");
   printf ("seed: %d\n", seed);
   srand (seed);
-  board *b = newBoard ();
 
-  hero *hero = newHero (paladin, "Uther");
-  printHero (hero);
+  hero *hero1 = newHero (paladin, "Uther", 25);
+  hero *hero2 = newHero (wizard, "Jaina", 25);
+
+  // printHero (hero);
+
+  runMatch (hero1, hero2);
 
   // test (b, hero);
-
-  sendBackupUnits (b, 40, hero);
-
-  printBoard (b);
-
-  tagWalls (b);
-  tagAttacks3x1 (b);
-
-  printBoard (b);
-
-  makeWalls (b, hero);
-
-  printBoard (b);
-
-  sinkWalls (b);
-
-  printBoard (b);
-
-  makeAttack3x1 (b, hero);
-
-  printBoard (b);
-
-  sinkAttacks3x1 (b);
-
-  printBoard (b);
-
-  freeHero (hero);
   exit (0);
 }

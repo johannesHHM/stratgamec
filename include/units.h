@@ -65,7 +65,9 @@ typedef struct Formation3x1
 unit *newUnit (unitType t, char n[], char i, color c);
 unit *newUnitFromProto (unitPrototype *up, color c);
 void initUnit (unit *u, unitType t, char n[], char i, color c);
+
 void freeUnit (unit *u);
+void freeFormation3x1 (formation3x1 *f);
 
 bool cmpUnits (unit *u1, unit *u2);
 

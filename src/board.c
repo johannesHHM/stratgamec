@@ -11,7 +11,7 @@
 
 // TODO change backup units to hero ?
 board *
-newBoard ()
+newBoard (int maxUnits)
 {
   board *b = (board *)malloc (sizeof (board));
   b->HIGHT = WIDTH_C;
@@ -23,8 +23,23 @@ newBoard ()
           b->board[x][y] = NULL;
         }
     }
-  b->backupUnits = 60;
+  b->backupUnits = maxUnits;
   return b;
+}
+
+void
+freeBoard (board *b)
+{
+  for (int x = 0; x < b->HIGHT; ++x)
+    {
+      for (int y = 0; y < b->WIDTH; ++y)
+        {
+          if (b->board[x][y])
+            freeUnit (b->board[x][y]);
+        }
+    }
+  free (b);
+  b = NULL;
 }
 
 void
@@ -350,7 +365,7 @@ sinkWalls (board *b)
 }
 
 void
-makeAttack3x1 (board *b, hero *h)
+makeAttacks3x1 (board *b, hero *h)
 {
   for (int y = 0; y < b->WIDTH; y++)
     {

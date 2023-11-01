@@ -6,7 +6,7 @@
 #include <string.h>
 
 hero *
-newHero (heroType hc, char *n)
+newHero (heroType hc, char *n, int maxUnits)
 {
   hero *h = malloc (sizeof (hero));
   h->type = hc;
@@ -14,6 +14,7 @@ newHero (heroType hc, char *n)
   readUnits (h->unitProtoList, hc);
   readFormations3x1 (h->formationProtoList, hc);
   readWall (&h->protoWall, &h->level1Wall, &h->level2Wall, &h->level3Wall, hc);
+  h->maxUnits = maxUnits;
   return h;
 }
 

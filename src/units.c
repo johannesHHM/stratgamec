@@ -70,6 +70,7 @@ newFormationFromProto3x1 (formationPrototype3x1 *fp, color c)
 void
 freeUnit (unit *u)
 {
+  freeFormation3x1 (u->formation3x1);
   free (u);
   u = NULL;
 }
