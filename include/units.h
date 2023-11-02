@@ -83,4 +83,5 @@ formation3x1 *newFormationFromProto3x1 (formationPrototype3x1 *fp, color c);
 void freeFormation3x1 (formation3x1 *f);
 
 void printUnit (unit *u);
+
 #endif

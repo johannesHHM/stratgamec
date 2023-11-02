@@ -9,8 +9,9 @@
 #define HIGHT_C 8
 
 // TODO maybe make board width & hight custom,
-// aka make board unit** and malloc size from
+// aka make board unit* and malloc size from
 // WIDTH and HIGHT
+// TODO change backup units to hero ?
 typedef struct Board
 {
   int WIDTH;
@@ -20,7 +21,6 @@ typedef struct Board
 } board;
 
 board *newBoard (int maxUnits);
-
 void freeBoard (board *b);
 
 bool sendUnit (board *b, unit u, int y);

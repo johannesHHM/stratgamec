@@ -10,8 +10,11 @@
 #include <time.h>
 
 void
-test (board *b, hero *h)
+test ()
 {
+  board *b = newBoard (25);
+  hero *h = newHero (paladin, "Uther", 25);
+
   unit redArcher0 = initUnitFromProto (&h->unitProtoList[0], 0);
   unit redArcher1 = initUnitFromProto (&h->unitProtoList[0], 0);
   unit redArcher2 = initUnitFromProto (&h->unitProtoList[0], 0);
@@ -71,11 +74,9 @@ main ()
 
   hero *hero1 = newHero (paladin, "Uther", 25);
   hero *hero2 = newHero (wizard, "Jaina", 25);
-
-  // printHero (hero);
-
   runMatch (hero1, hero2);
 
-  // test (b, hero);
+  // test ();
+
   exit (0);
 }

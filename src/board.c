@@ -9,7 +9,6 @@
 #include <string.h>
 #include <unistd.h>
 
-// TODO change backup units to hero ?
 board *
 newBoard (int maxUnits)
 {
