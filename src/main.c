@@ -1,6 +1,7 @@
 #include "board.h"
+#include "game.h"
 #include "heros.h"
-#include "match.h"
+#include "sprites.h"
 #include "units.h"
 
 #include <stdbool.h>
@@ -63,20 +64,22 @@ test ()
   exit (0);
 }
 
+void
+testAnim ()
+{
+  SetTraceLogLevel (LOG_ERROR);
+
+  hero *h = newHero (paladin, "Uther", 25);
+
+  readHeroAnimationDatabase ((int)h->type);
+
+  exit (0);
+}
+
 int
 main ()
 {
-  int seed = time (NULL);
-  // seed = 1697559963;
-  printf ("\nRunning Main\n\n");
-  printf ("seed: %d\n", seed);
-  srand (seed);
-
-  hero *hero1 = newHero (paladin, "Uther", 25);
-  hero *hero2 = newHero (wizard, "Jaina", 25);
-  runMatch (hero1, hero2);
-
-  // test ();
-
+  testAnim ();
+  // runGame ();
   exit (0);
 }

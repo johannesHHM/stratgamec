@@ -7,7 +7,7 @@
 
 // TODO set strength
 unit *
-newUnit (unitType t, char n[], char i, color c)
+newUnit (unitType t, char n[], char i, colorG c)
 {
   unit *u = malloc (sizeof (unit));
   u->type = t;
@@ -24,7 +24,7 @@ newUnit (unitType t, char n[], char i, color c)
 }
 
 unit *
-newUnitFromProto (unitPrototype *up, color c)
+newUnitFromProto (unitPrototype *up, colorG c)
 {
   unit *u = malloc (sizeof (unit));
   u->occupied = true;
@@ -43,7 +43,7 @@ newUnitFromProto (unitPrototype *up, color c)
 }
 
 unit
-initUnitFromProto (unitPrototype *up, color c)
+initUnitFromProto (unitPrototype *up, colorG c)
 {
   unit u;
   u.occupied = true;
@@ -63,7 +63,7 @@ initUnitFromProto (unitPrototype *up, color c)
 
 // TODO set strength
 void
-initUnit (unit *u, unitType t, char n[], char i, color c)
+initUnit (unit *u, unitType t, char n[], char i, colorG c)
 {
   u->type = t;
   strcpy (u->name, n);
@@ -77,7 +77,7 @@ initUnit (unit *u, unitType t, char n[], char i, color c)
 }
 
 formation3x1 *
-newFormationFromProto3x1 (formationPrototype3x1 *fp, color c)
+newFormationFromProto3x1 (formationPrototype3x1 *fp, colorG c)
 {
   formation3x1 *f = malloc (sizeof (formation3x1));
   f->type = fp->type;

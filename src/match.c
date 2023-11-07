@@ -2,12 +2,19 @@
 #include "board.h"
 #include "heros.h"
 
+#include "raylib.h"
+
+#include <unistd.h>
+
 match *
 newMatch (hero *hero1, hero *hero2)
 {
   match *m = malloc (sizeof (match));
   m->board1 = newBoard (hero1->maxUnits);
   m->board2 = newBoard (hero2->maxUnits);
+
+  m->hero1 = hero1;
+  m->hero1 = hero2;
   return m;
 }
 
@@ -21,36 +28,39 @@ freeMatch (match *m)
 }
 
 void
-runMatch (hero *hero1, hero *hero2)
+runMatch (match *match)
 {
-  match *match;
+  match->board1->backupUnits = 1;
 
-  match = newMatch (hero1, hero2);
+  sendBackupUnits (match->board1, match->board1->backupUnits, match->hero1);
 
-  sendBackupUnits (match->board1, hero1->maxUnits, hero1);
-
-  printBoard (match->board1);
+  // printBoard (match->board1);
 
   tagWalls (match->board1);
   tagAttacks3x1 (match->board1);
 
-  printBoard (match->board1);
+  // printBoard (match->board1);
 
-  makeWalls (match->board1, hero1);
+  makeWalls (match->board1, match->hero1);
 
-  printBoard (match->board1);
+  // printBoard (match->board1);
 
   sinkWalls (match->board1);
 
-  printBoard (match->board1);
+  // printBoard (match->board1);
 
-  makeAttacks3x1 (match->board1, hero1);
+  makeAttacks3x1 (match->board1, match->hero1);
 
-  printBoard (match->board1);
+  // printBoard (match->board1);
 
   sinkAttacks3x1 (match->board1);
 
   printBoard (match->board1);
 
-  freeMatch (match);
+  usleep (500 * 1000);
+}
+
+void
+displayMatch (match *match)
+{
 }

@@ -11,7 +11,7 @@ randColor ()
 }
 
 void
-setPrintColor (color c)
+setPrintColor (colorG c)
 {
   switch (c)
     {

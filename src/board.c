@@ -109,6 +109,8 @@ sendBackupUnits (board *b, int amount, hero *h)
 {
   if (b->backupUnits < amount)
     return false;
+  if (checkFullBoard (b))
+    return false;
   for (int i = 0; i < amount; ++i)
     {
       bool response = false;
@@ -244,6 +246,17 @@ checkTagsNeeded (board *b)
 {
   return false;
   return checkWall (b) || checkAttack3x1 (b);
+}
+
+bool
+checkFullBoard (board *b)
+{
+  for (int y = 0; y < b->WIDTH; y++)
+    {
+      if (!b->board[b->HIGHT - 1][y].occupied)
+        return false;
+    }
+  return true;
 }
 
 bool

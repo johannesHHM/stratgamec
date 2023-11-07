@@ -12,11 +12,15 @@ typedef struct Match
 
   hero *hero1;
   hero *hero2;
+
 } match;
 
 match *newMatch (hero *hero1, hero *hero2);
 
 void freeMatch (match *m);
 
-void runMatch (hero *hero1, hero *hero2);
+void runMatch (match *match);
+
+void displayMatch (match *match);
+
 #endif

@@ -3,16 +3,18 @@
 
 #include <stdlib.h>
 
-typedef enum Color
+#define COLOR_COUNT 3
+
+typedef enum ColorG
 {
   red = 0,
   green = 1,
   blue = 2,
   def
-} color;
+} colorG;
 
 int randColor ();
 
-void setPrintColor (color c);
+void setPrintColor (colorG c);
 
 #endif

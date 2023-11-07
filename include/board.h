@@ -31,6 +31,8 @@ bool checkTagsNeeded (board *b);
 bool checkAttack3x1 (board *b);
 bool checkWall (board *b);
 
+bool checkFullBoard (board *b);
+
 void tagAttacks3x1 (board *b);
 void tagWalls (board *b);
 

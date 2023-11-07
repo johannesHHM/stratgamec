@@ -29,7 +29,7 @@ typedef struct Unit
   char icon;
   // TODO maybe debug only?
   char tagIcon;
-  color color;
+  colorG color;
 
   int strength;
 
@@ -63,10 +63,10 @@ typedef struct Formation3x1
   int power;
 } formation3x1;
 
-unit *newUnit (unitType t, char n[], char i, color c);
-unit *newUnitFromProto (unitPrototype *up, color c);
-unit initUnitFromProto (unitPrototype *up, color c);
-void initUnit (unit *u, unitType t, char n[], char i, color c);
+unit *newUnit (unitType t, char n[], char i, colorG c);
+unit *newUnitFromProto (unitPrototype *up, colorG c);
+unit initUnitFromProto (unitPrototype *up, colorG c);
+void initUnit (unit *u, unitType t, char n[], char i, colorG c);
 
 void freeUnit (unit *u);
 void freeFormation3x1 (formation3x1 *f);
@@ -79,7 +79,7 @@ void readWall (unitPrototype *protoWall, int *lvl1Wall, int *lvl2Wall,
 
 void readFormations3x1 (formationPrototype3x1 *prototypeList, int ht);
 
-formation3x1 *newFormationFromProto3x1 (formationPrototype3x1 *fp, color c);
+formation3x1 *newFormationFromProto3x1 (formationPrototype3x1 *fp, colorG c);
 void freeFormation3x1 (formation3x1 *f);
 
 void printUnit (unit *u);
