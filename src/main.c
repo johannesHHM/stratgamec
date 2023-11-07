@@ -71,7 +71,13 @@ testAnim ()
 
   hero *h = newHero (paladin, "Uther", 25);
 
-  readHeroAnimationDatabase ((int)h->type);
+  heroAnimationDatabase *db = readHeroAnimationDatabase ((int)h->type);
+
+  printHeroAnimationDatabase (db);
+
+  freeHeroAnimationDatabase (db);
+
+  freeHero (h);
 
   exit (0);
 }

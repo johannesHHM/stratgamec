@@ -3,17 +3,46 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "raylib.h"
 
 void
 printHeroAnimationDatabase (heroAnimationDatabase *db)
 {
-  // printf ("unitType: %d\n", db->animationUnitType);
+  for (int i = 0; i < UNIT_COUNT; i++)
+    {
+      printf ("unitType: %d, %d states\n",
+              db->unitAnimationDatabase[i]->unitType,
+              db->unitAnimationDatabase[i]->stateCount);
+      for (int s = 0; s < db->unitAnimationDatabase[i]->stateCount; s++)
+        for (int c = 0; c < COLOR_COUNT; c++)
+          {
+            animation *anim;
+            anim = db->unitAnimationDatabase[i]->animations[s][c];
+            printf ("spritesLen: %d\n", anim->spritesLen);
+            printf ("frameCounts: [ ");
+            for (int i = 0; i < anim->spritesLen; i++)
+              {
+                if (i == anim->spritesLen - 1)
+                  printf ("%d ", anim->frameCounts[i]);
+                else
+                  printf ("%d, ", anim->frameCounts[i]);
+              }
+            printf ("]\n");
+            printf ("sprites:\n");
+            for (int i = 0; i < anim->spritesLen; i++)
+              {
+                printf ("%d: (%d,%d)\n", i, anim->sprites[i].width,
+                        anim->sprites[i].height);
+              }
+          }
+    }
   printf ("\n");
 }
 
 // TODO fix whatever the fuck this function is
+// TODO how to free all this shit, who to free all this shit
 heroAnimationDatabase *
 readHeroAnimationDatabase (int ht)
 {
@@ -42,18 +71,19 @@ readHeroAnimationDatabase (int ht)
   heroDatabase->unitAnimationDatabase
       = malloc (animationCountOLD * sizeof (unitAnimationDatabase));
 
+  int unitCount = 0;
   do
     {
-      int unitCount = 0;
       int ut;
       int animationCount;
       read = fscanf (animationsFile, "%d,%d\n", &ut, &animationCount);
 
-      printf ("ut: %d, ac: %d\n", ut, animationCount);
+      // printf ("ut: %d, ac: %d\n", ut, animationCount);
 
       unitAnimationDatabase *uAniDb;
       uAniDb = malloc (sizeof (unitAnimationDatabase));
-      uAniDb->animationUnitType = ut;
+      uAniDb->unitType = ut;
+      uAniDb->stateCount = animationCount;
       uAniDb->animations = malloc (animationCount * sizeof (animation *));
       for (int i = 0; i < animationCount; i++)
         uAniDb->animations[i] = malloc (COLOR_COUNT * sizeof (animation *));
@@ -67,27 +97,47 @@ readHeroAnimationDatabase (int ht)
           animationFile = fopen (filename, "r");
           free (filename);
 
+          int spritesLength = 0;
+          int *frameCounts;
+          read = fscanf (animationFile, "%d;", &spritesLength);
+
+          frameCounts = malloc (spritesLength * sizeof (int));
+          for (int f = 0; f < spritesLength; f++)
+            {
+              read = fscanf (animationFile, "%d,", &frameCounts[f]);
+            }
+
+          // printf ("read: %d\n", read);
+
           for (int c = 0; c < COLOR_COUNT; c++)
             {
-              animation currAnim;
-              fscanf (animationFile, "%d;", &currAnim.spritesLen);
+              animation *currentAnim;
+              currentAnim = malloc (sizeof (animation));
+              currentAnim->spritesLen = spritesLength;
 
-              printf ("spritesLen: %d\n", currAnim.spritesLen);
+              currentAnim->frameCounts
+                  = malloc (currentAnim->spritesLen * sizeof (int));
+              memcpy (currentAnim->frameCounts, frameCounts,
+                      currentAnim->spritesLen * sizeof (int));
 
-              currAnim.sprites = malloc (currAnim.spritesLen * sizeof (Image));
-              currAnim.frameCounts
-                  = malloc (currAnim.spritesLen * sizeof (int));
-              for (int f = 0; f < currAnim.spritesLen; f++)
+              // printf ("IN: spritesLen: %d\n", currentAnim->spritesLen);
+
+              // printf ("spritesLen: %d\n", currAnim.spritesLen);
+
+              currentAnim->sprites
+                  = malloc (currentAnim->spritesLen * sizeof (Image));
+
+              for (int f = 0; f < currentAnim->spritesLen; f++)
                 {
-                  fscanf (animationFile, "%d,", &currAnim.frameCounts[f]);
-                  char *filename2;
-                  asprintf (&filename2, "data/hero/%d/sprites/%d/%d/%d_%d.png",
+                  char *filename;
+                  asprintf (&filename, "data/hero/%d/sprites/%d/%d/%d_%d.png",
                             ht, ut, anim, f, c);
-                  currAnim.sprites[f] = LoadImage (filename2);
-                  free (filename2);
+                  currentAnim->sprites[f] = LoadImage (filename);
+                  free (filename);
                 }
-              uAniDb->animations[anim][c] = currAnim;
+              uAniDb->animations[anim][c] = currentAnim;
             }
+          free (frameCounts);
         }
       heroDatabase->unitAnimationDatabase[unitCount] = uAniDb;
       unitCount++;
@@ -95,4 +145,35 @@ readHeroAnimationDatabase (int ht)
   while (!feof (animationsFile));
 
   return heroDatabase;
+}
+
+void
+freeHeroAnimationDatabase (heroAnimationDatabase *db)
+{
+  for (int i = 0; i < UNIT_COUNT; i++)
+    {
+      unitAnimationDatabase *unitDatabase;
+      unitDatabase = db->unitAnimationDatabase[i];
+      for (int s = 0; s < unitDatabase->stateCount; s++)
+        for (int c = 0; c < COLOR_COUNT; c++)
+          {
+            animation *anim;
+            anim = unitDatabase->animations[s][c];
+            for (int i = 0; i < anim->spritesLen; i++)
+              UnloadImage (anim->sprites[i]);
+
+            free (anim->sprites);
+            free (anim->frameCounts);
+            free (anim);
+          }
+
+      for (int i = 0; i < unitDatabase->stateCount; i++)
+        free (unitDatabase->animations[i]);
+
+      free (unitDatabase->animations);
+      free (unitDatabase);
+    }
+  free (db->unitAnimationDatabase);
+  free (db);
+  db = NULL;
 }
