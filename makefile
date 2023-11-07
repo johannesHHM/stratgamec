@@ -11,7 +11,7 @@ CFLAGS   := -Wall
 LDFLAGS  := -Llib -g -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 LDLIBS   := -lm
 
-.PHONY: all clean run
+.PHONY: all clean run mem_check
 
 all: $(EXE)
 
@@ -28,6 +28,15 @@ clean:
 	@$(RM) -rv $(BIN_DIR) $(OBJ_DIR)
 
 run: $(EXE)
-	./build/game
+	$(EXE)
+
+mem_check: $(EXE)
+	valgrind --leak-check=full \
+			--show-leak-kinds=all \
+			--track-origins=yes \
+			--verbose \
+			--log-file=valgrind-out.txt \
+			$(EXE)
+
 
 -include $(OBJ:.o=.d)
