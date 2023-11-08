@@ -15,6 +15,8 @@ newHero (heroType hc, char *n, int maxUnits)
   readFormations3x1 (h->formationProtoList, hc);
   readWall (&h->protoWall, &h->level1Wall, &h->level2Wall, &h->level3Wall, hc);
   h->maxUnits = maxUnits;
+
+  h->animationDb = readHeroAnimationDatabase (hc);
   return h;
 }
 
@@ -29,12 +31,9 @@ formationPrototype3x1 *
 getFormationPrototype (hero *hero, unitType type)
 {
   for (int i = 0; i < UNIT_COUNT; i++)
-    {
-      if (hero->formationProtoList[i].type == type)
-        {
-          return &hero->formationProtoList[i];
-        }
-    }
+    if (hero->formationProtoList[i].type == type)
+      return &hero->formationProtoList[i];
+  return NULL;
 }
 
 void

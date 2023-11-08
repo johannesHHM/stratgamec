@@ -35,7 +35,7 @@ mem_check: $(EXE)
 			--show-leak-kinds=all \
 			--track-origins=yes \
 			--verbose \
-			--log-file=valgrind-out.txt \
+			--log-file=$(BIN_DIR)/valgrind-out.txt \
 			$(EXE)
 
 

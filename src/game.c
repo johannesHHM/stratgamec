@@ -24,7 +24,7 @@ runGame ()
   SetTargetFPS (60);
 
   hero *hero1 = newHero (paladin, "Uther", 25);
-  hero *hero2 = newHero (wizard, "Jaina", 25);
+  hero *hero2 = newHero (paladin, "Jaina", 25);
 
   match *match;
   match = newMatch (hero1, hero2);
@@ -37,6 +37,14 @@ runGame ()
 
       // DRAW
       BeginDrawing ();
+      if (match->board1->board[0][0].occupied)
+        {
+          Texture2D text
+              = LoadTextureFromImage (match->board1->board[0][0]
+                                          .animationDb->animations[0][0]
+                                          ->sprites[0]);
+          DrawTexture (text, 10, 10, WHITE);
+        }
       ClearBackground (RAYWHITE);
       DrawText ("Congrats! You created your first window!", 190, 200, 20,
                 BLACK);

@@ -37,4 +37,6 @@ heroAnimationDatabase *readHeroAnimationDatabase (int ht);
 
 void freeHeroAnimationDatabase (heroAnimationDatabase *db);
 
+unitAnimationDatabase *matchUnitToDatabase (int ut, heroAnimationDatabase *db);
+
 #endif

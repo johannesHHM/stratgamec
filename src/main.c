@@ -11,21 +11,30 @@
 #include <time.h>
 
 void
-test ()
+testBoard ()
 {
   board *b = newBoard (25);
   hero *h = newHero (paladin, "Uther", 25);
 
-  unit redArcher0 = initUnitFromProto (&h->unitProtoList[0], 0);
-  unit redArcher1 = initUnitFromProto (&h->unitProtoList[0], 0);
-  unit redArcher2 = initUnitFromProto (&h->unitProtoList[0], 0);
-  unit redArcher3 = initUnitFromProto (&h->unitProtoList[0], 0);
-  unit redArcher4 = initUnitFromProto (&h->unitProtoList[0], 0);
+  unit redArcher0
+      = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
+  unit redArcher1
+      = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
+  unit redArcher2
+      = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
+  unit redArcher3
+      = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
+  unit redArcher4
+      = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
 
-  unit greenArcher0 = initUnitFromProto (&h->unitProtoList[0], 1);
-  unit greenArcher1 = initUnitFromProto (&h->unitProtoList[0], 1);
-  unit greenArcher2 = initUnitFromProto (&h->unitProtoList[0], 1);
-  unit greenArcher3 = initUnitFromProto (&h->unitProtoList[0], 1);
+  unit greenArcher0
+      = initUnitFromProto (&h->unitProtoList[0], 1, h->animationDb);
+  unit greenArcher1
+      = initUnitFromProto (&h->unitProtoList[0], 1, h->animationDb);
+  unit greenArcher2
+      = initUnitFromProto (&h->unitProtoList[0], 1, h->animationDb);
+  unit greenArcher3
+      = initUnitFromProto (&h->unitProtoList[0], 1, h->animationDb);
 
   // unit blueArcher0 = initUnitFromProto (&h->unitProtoList[0], 2);
   // unit blueArcher1 = initUnitFromProto (&h->unitProtoList[0], 2);
@@ -85,7 +94,7 @@ testAnim ()
 int
 main ()
 {
-  testAnim ();
-  // runGame ();
+  // testAnim ();
+  runGame ();
   exit (0);
 }

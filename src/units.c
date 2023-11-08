@@ -1,5 +1,5 @@
 #include "units.h"
-#include "heros.h"
+#include "sprites.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,7 +43,7 @@ newUnitFromProto (unitPrototype *up, colorG c)
 }
 
 unit
-initUnitFromProto (unitPrototype *up, colorG c)
+initUnitFromProto (unitPrototype *up, colorG c, heroAnimationDatabase *hdb)
 {
   unit u;
   u.occupied = true;
@@ -57,6 +57,7 @@ initUnitFromProto (unitPrototype *up, colorG c)
   u.taggedAttack = false;
   u.hasFormation = false;
   u.firstFormation = false;
+  u.animationDb = matchUnitToDatabase ((int)u.type, hdb);
 
   return u;
 }

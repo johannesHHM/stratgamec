@@ -177,3 +177,12 @@ freeHeroAnimationDatabase (heroAnimationDatabase *db)
   free (db);
   db = NULL;
 }
+
+unitAnimationDatabase *
+matchUnitToDatabase (int ut, heroAnimationDatabase *db)
+{
+  for (int i = 0; i < UNIT_COUNT; i++)
+    if (ut == db->unitAnimationDatabase[i]->unitType)
+      return db->unitAnimationDatabase[i];
+  return NULL;
+}

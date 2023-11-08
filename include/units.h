@@ -2,6 +2,7 @@
 #define _UNITS_H_
 
 #include "colors.h"
+#include "sprites.h"
 
 #include <stdbool.h>
 
@@ -39,6 +40,8 @@ typedef struct Unit
   bool firstFormation;
 
   formation3x1 *formation3x1;
+
+  unitAnimationDatabase *animationDb;
 } unit;
 
 typedef struct UnitPrototype
@@ -65,7 +68,8 @@ typedef struct Formation3x1
 
 unit *newUnit (unitType t, char n[], char i, colorG c);
 unit *newUnitFromProto (unitPrototype *up, colorG c);
-unit initUnitFromProto (unitPrototype *up, colorG c);
+unit initUnitFromProto (unitPrototype *up, colorG c,
+                        heroAnimationDatabase *hdb);
 void initUnit (unit *u, unitType t, char n[], char i, colorG c);
 
 void freeUnit (unit *u);

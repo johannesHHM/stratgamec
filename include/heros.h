@@ -1,6 +1,7 @@
 #ifndef _HEROS_H_
 #define _HEROS_H_
 
+#include "sprites.h"
 #include "units.h"
 
 #define UNIT_COUNT 3
@@ -22,6 +23,8 @@ typedef struct Hero
   int level1Wall, level2Wall, level3Wall;
 
   int maxUnits;
+
+  heroAnimationDatabase *animationDb;
 } hero;
 
 hero *newHero (heroType hc, char *n, int maxUnits);
