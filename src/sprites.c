@@ -132,7 +132,7 @@ readHeroAnimationDatabase (int ht)
                   char *filename;
                   asprintf (&filename, "data/hero/%d/sprites/%d/%d/%d_%d.png",
                             ht, ut, anim, f, c);
-                  currentAnim->sprites[f] = LoadImage (filename);
+                  currentAnim->sprites[f] = LoadTexture (filename);
                   free (filename);
                 }
               uAniDb->animations[anim][c] = currentAnim;
@@ -160,7 +160,7 @@ freeHeroAnimationDatabase (heroAnimationDatabase *db)
             animation *anim;
             anim = unitDatabase->animations[s][c];
             for (int i = 0; i < anim->spritesLen; i++)
-              UnloadImage (anim->sprites[i]);
+              UnloadTexture (anim->sprites[i]);
 
             free (anim->sprites);
             free (anim->frameCounts);

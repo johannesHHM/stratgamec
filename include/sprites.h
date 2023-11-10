@@ -14,9 +14,9 @@ typedef enum unitAnimationState
 typedef struct Animation
 {
   int spritesLen;
-  Image *sprites;   // len of spritesLen, reference to all sprites in order
-  int *frameCounts; // len of spritesLen, how long to display sprite
-                    // ex: [7, 7, 5, 7]
+  Texture2D *sprites; // len of spritesLen, reference to all sprites in order
+  int *frameCounts;   // len of spritesLen, how long to display sprite
+                      // ex: [7, 7, 5, 7]
 } animation;
 
 typedef struct UnitAnimationDatabase // for 1 unit type
