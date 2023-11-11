@@ -13,6 +13,8 @@
 void
 testBoard ()
 {
+  InitWindow (100, 100, "temp_window_title");
+
   board *b = newBoard (25);
   hero *h = newHero (paladin, "Uther", 25);
 
@@ -25,6 +27,13 @@ testBoard ()
   unit redArcher3
       = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
   unit redArcher4
+      = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
+
+  unit redArcher5
+      = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
+  unit redArcher6
+      = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
+  unit redArcher7
       = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
 
   unit greenArcher0
@@ -48,10 +57,26 @@ testBoard ()
   // sendUnit (b, blueArcher1, 0);
   // sendUnit (b, blueArcher2, 0);
 
-  sendUnit (b, greenArcher0, 1);
-  sendUnit (b, greenArcher1, 2);
-  sendUnit (b, greenArcher2, 1);
-  sendUnit (b, greenArcher3, 2);
+  sendUnit (b, redArcher5, 1);
+  sendUnit (b, redArcher6, 2);
+  // sendUnit (b, greenArcher2, 1);
+  // sendUnit (b, greenArcher3, 2);
+
+  printBoard (b);
+
+  tagWalls (b);
+  tagAttacks3x1 (b);
+
+  printBoard (b);
+
+  makeWalls (b, h);
+  makeAttacks3x1 (b, h);
+
+  printBoard (b);
+
+  sinkWalls (b);
+
+  printBoard (b);
 
   sendUnit (b, redArcher3, 1);
   sendUnit (b, redArcher4, 2);
@@ -64,6 +89,7 @@ testBoard ()
   printBoard (b);
 
   makeWalls (b, h);
+  makeAttacks3x1 (b, h);
 
   printBoard (b);
 
@@ -95,6 +121,7 @@ int
 main ()
 {
   // testAnim ();
+  // testBoard ();
   runGame ();
   exit (0);
 }

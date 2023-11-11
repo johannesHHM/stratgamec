@@ -184,5 +184,10 @@ matchUnitToDatabase (int ut, heroAnimationDatabase *db)
   for (int i = 0; i < UNIT_COUNT; i++)
     if (ut == db->unitAnimationDatabase[i]->unitType)
       return db->unitAnimationDatabase[i];
+
+  fprintf (stderr,
+           "[ERROR] could not find unit animation in hero "
+           "database\n        unit type: %d\n",
+           ut);
   return NULL;
 }

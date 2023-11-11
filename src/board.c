@@ -57,8 +57,10 @@ printBoard (board *b)
                 {
                   if (b->board[x][y].firstFormation)
                     printf (" %cf", b->board[x][y].tagIcon);
+                  else if (b->board[x][y].hasFormation)
+                    printf (" %ch", b->board[x][y].tagIcon);
                   else
-                    printf (" %c ", b->board[x][y].tagIcon);
+                    printf (" %cn", b->board[x][y].tagIcon);
                 }
             }
           else
@@ -145,6 +147,13 @@ tagWalls (board *b)
         {
           if (!b->board[x][y].occupied || !b->board[x][y + 1].occupied
               || !b->board[x][y + 2].occupied)
+            continue;
+          if (b->board[x][y].hasFormation || b->board[x][y + 1].hasFormation
+              || b->board[x][y + 2].hasFormation)
+            continue;
+          if ((int)b->board[x][y].type < 10
+              || (int)b->board[x][y + 1].type < 10
+              || (int)b->board[x][y + 2].type < 10)
             continue;
           if (cmpUnits (&b->board[x][y], &b->board[x][y + 1])
               && cmpUnits (&b->board[x][y], &b->board[x][y + 2]))
@@ -382,8 +391,8 @@ makeAttacks3x1 (board *b, hero *h)
           if (!b->board[x][y].occupied || !b->board[x][y].firstFormation)
             continue;
 
-          formation3x1 *f;
           formationPrototype3x1 *fp;
+          formation3x1 *f;
 
           fp = getFormationPrototype (h, b->board[x][y].type);
           f = newFormationFromProto3x1 (fp, b->board[x][y].color);

@@ -1,6 +1,7 @@
 #include "game.h"
 #include "heros.h"
 #include "match.h"
+#include "units.h"
 
 #include "raylib.h"
 
@@ -10,21 +11,23 @@
 void
 runGame ()
 {
-  int seed = time (NULL);
-  // seed = 1697559963;
-  printf ("\nRunning Main\n\n");
-  printf ("seed: %d\n", seed);
-  srand (seed);
 
-  const int screenWidth = 800;
-  const int screenHeight = 450;
+  const int screenWidth = 804;
+  const int screenHeight = 604;
 
-  const int virtualScreenWidth = 160;
-  const int virtualScreenHeight = 90;
+  const int virtualScreenWidth = 201;
+  const int virtualScreenHeight = 151;
 
   SetTraceLogLevel (LOG_ERROR);
   InitWindow (screenWidth, screenHeight, "temp_window_title");
   SetTargetFPS (60);
+
+  int seed = time (NULL);
+  // seed = 1697559963;
+  // seed = 1699665000;
+  printf ("\nRunning Main\n\n");
+  printf ("seed: %d\n", seed);
+  srand (seed);
 
   const float virtualRatio = (float)screenWidth / (float)virtualScreenWidth;
 
@@ -36,6 +39,9 @@ runGame ()
 
   RenderTexture2D target
       = LoadRenderTexture (virtualScreenWidth, virtualScreenHeight);
+
+  Texture2D board = LoadTexture ("data/board-outline.png");
+  Texture2D temp = LoadTexture ("data/temp-missing-unit.png");
 
   printf ("HELLO!\n");
   fflush (stdout);
@@ -76,16 +82,39 @@ runGame ()
       screenSpaceCamera.target.y -= worldSpaceCamera.target.y;
       screenSpaceCamera.target.y *= virtualRatio;
       //----------------------------------------------------------------------------------
-
       // Draw
       //----------------------------------------------------------------------------------
       BeginTextureMode (target);
       ClearBackground (RAYWHITE);
 
       BeginMode2D (worldSpaceCamera);
-      // DrawRectanglePro (rec01, origin, rotation, BLACK);
-      // DrawRectanglePro (rec02, origin, -rotation, RED);
-      // DrawRectanglePro (rec03, origin, rotation + 45.0f, BLUE);
+
+      for (int x = 0; x < 6; ++x)
+        {
+          for (int y = 0; y < 8; ++y)
+            {
+              if (match->board1->board[x][y].occupied)
+                {
+                  unit *u = &match->board1->board[x][y];
+                  if (u->animationDb)
+                    {
+                      Texture2D text
+                          = u->animationDb->animations[0][(int)u->color]
+                                ->sprites[0];
+                      if (!u->hasFormation)
+                        DrawTexture (text, 1 + (y * 25), 1 + (x * 25), WHITE);
+                      else
+                        DrawTexture (text, 1 + (y * 25), 1 + (x * 25),
+                                     (Color){ 120, 120, 120, 255 });
+                    }
+                  else
+                    DrawTexture (temp, 1 + (y * 25), 1 + (x * 25), WHITE);
+                }
+            }
+        }
+
+      DrawTexture (board, 0, 0, WHITE);
+
       EndMode2D ();
       EndTextureMode ();
 
@@ -96,13 +125,14 @@ runGame ()
       DrawTexturePro (target.texture, sourceRec, destRec, origin, 0.0f, WHITE);
       EndMode2D ();
 
-      DrawText (
-          TextFormat ("Screen resolution: %ix%i", screenWidth, screenHeight),
-          10, 10, 20, DARKBLUE);
-      DrawText (TextFormat ("World resolution: %ix%i", virtualScreenWidth,
-                            virtualScreenHeight),
-                10, 40, 20, DARKGREEN);
-      DrawFPS (GetScreenWidth () - 95, 10);
+      // DrawText (
+      //     TextFormat ("Screen resolution: %ix%i", screenWidth,
+      //     screenHeight), 10, 10, 20, DARKBLUE);
+      // DrawText (TextFormat ("World resolution: %ix%i",
+      virtualScreenWidth,
+          //                       virtualScreenHeight),
+          //           10, 40, 20, DARKGREEN);
+          DrawFPS (GetScreenWidth () - 95, 10);
       EndDrawing ();
 
       // // DRAW
@@ -117,7 +147,8 @@ runGame ()
       //                                     ->sprites[0]);
       //     DrawTexture (text, 10, 10, WHITE);
       //   }
-      // DrawText ("Congrats! You created your first window!", 190, 200, 20,
+      // DrawText ("Congrats! You created your first window!", 190, 200,
+      // 20,
       //           BLACK);
       // EndDrawing ();
     }

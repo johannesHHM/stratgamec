@@ -57,7 +57,7 @@ runMatch (match *match)
 
   printBoard (match->board1);
 
-  usleep (500 * 1000);
+  // usleep (500 * 1000);
 }
 
 void
