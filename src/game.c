@@ -89,6 +89,10 @@ runGame ()
 
       BeginMode2D (worldSpaceCamera);
 
+      // Board background
+      DrawTexture (board, 0, 0, WHITE);
+
+      // Draw board units
       for (int x = 0; x < 6; ++x)
         {
           for (int y = 0; y < 8; ++y)
@@ -112,8 +116,6 @@ runGame ()
                 }
             }
         }
-
-      DrawTexture (board, 0, 0, WHITE);
 
       EndMode2D ();
       EndTextureMode ();

@@ -30,7 +30,7 @@ freeMatch (match *m)
 void
 runMatch (match *match)
 {
-  match->board1->backupUnits = 1;
+  // match->board1->backupUnits = 1;
 
   sendBackupUnits (match->board1, match->board1->backupUnits, match->hero1);
 

@@ -33,17 +33,17 @@ testBoard ()
       = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
   unit redArcher6
       = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
-  unit redArcher7
-      = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
+  //   unit redArcher7
+  //       = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
 
-  unit greenArcher0
-      = initUnitFromProto (&h->unitProtoList[0], 1, h->animationDb);
-  unit greenArcher1
-      = initUnitFromProto (&h->unitProtoList[0], 1, h->animationDb);
-  unit greenArcher2
-      = initUnitFromProto (&h->unitProtoList[0], 1, h->animationDb);
-  unit greenArcher3
-      = initUnitFromProto (&h->unitProtoList[0], 1, h->animationDb);
+  //   unit greenArcher0
+  //       = initUnitFromProto (&h->unitProtoList[0], 1, h->animationDb);
+  //   unit greenArcher1
+  //       = initUnitFromProto (&h->unitProtoList[0], 1, h->animationDb);
+  //   unit greenArcher2
+  //       = initUnitFromProto (&h->unitProtoList[0], 1, h->animationDb);
+  //   unit greenArcher3
+  //       = initUnitFromProto (&h->unitProtoList[0], 1, h->animationDb);
 
   // unit blueArcher0 = initUnitFromProto (&h->unitProtoList[0], 2);
   // unit blueArcher1 = initUnitFromProto (&h->unitProtoList[0], 2);
