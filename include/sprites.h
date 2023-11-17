@@ -3,7 +3,7 @@
 
 #include <raylib.h>
 
-#define UNIT_COUNT 3
+#define UNIT_ANIMATION_COUNT 4
 #define UNIT_STATES 1
 
 typedef enum unitAnimationState

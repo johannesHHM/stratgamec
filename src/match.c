@@ -14,7 +14,7 @@ newMatch (hero *hero1, hero *hero2)
   m->board2 = newBoard (hero2->maxUnits);
 
   m->hero1 = hero1;
-  m->hero1 = hero2;
+  m->hero2 = hero2;
   return m;
 }
 

@@ -10,7 +10,7 @@
 void
 printHeroAnimationDatabase (heroAnimationDatabase *db)
 {
-  for (int i = 0; i < UNIT_COUNT; i++)
+  for (int i = 0; i < UNIT_ANIMATION_COUNT; i++)
     {
       printf ("unitType: %d, %d states\n",
               db->unitAnimationDatabase[i]->unitType,
@@ -49,7 +49,7 @@ readHeroAnimationDatabase (int ht)
   FILE *animationsFile;
 
   char *filename;
-  asprintf (&filename, "data/hero/%d/sprites/animations", ht);
+  asprintf (&filename, "data/hero/%d/animations", ht);
   animationsFile = fopen (filename, "r");
   free (filename);
 
@@ -72,7 +72,7 @@ readHeroAnimationDatabase (int ht)
       = malloc (animationCountOLD * sizeof (unitAnimationDatabase));
 
   int unitCount = 0;
-  do
+  for (int _ = 0; _ < animationCountOLD; _++)
     {
       int ut;
       int animationCount;
@@ -142,7 +142,6 @@ readHeroAnimationDatabase (int ht)
       heroDatabase->unitAnimationDatabase[unitCount] = uAniDb;
       unitCount++;
     }
-  while (!feof (animationsFile));
 
   return heroDatabase;
 }
@@ -150,7 +149,7 @@ readHeroAnimationDatabase (int ht)
 void
 freeHeroAnimationDatabase (heroAnimationDatabase *db)
 {
-  for (int i = 0; i < UNIT_COUNT; i++)
+  for (int i = 0; i < UNIT_ANIMATION_COUNT; i++)
     {
       unitAnimationDatabase *unitDatabase;
       unitDatabase = db->unitAnimationDatabase[i];
@@ -181,7 +180,7 @@ freeHeroAnimationDatabase (heroAnimationDatabase *db)
 unitAnimationDatabase *
 matchUnitToDatabase (int ut, heroAnimationDatabase *db)
 {
-  for (int i = 0; i < UNIT_COUNT; i++)
+  for (int i = 0; i < UNIT_ANIMATION_COUNT; i++)
     if (ut == db->unitAnimationDatabase[i]->unitType)
       return db->unitAnimationDatabase[i];
 

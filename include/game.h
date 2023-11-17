@@ -5,10 +5,15 @@
 
 #include <stdlib.h>
 
-typedef struct SpriteBank
+typedef struct Game
 {
-  Texture2D *sprites;
-} spriteBank;
+  int screenWidth;
+  int screenHeight;
+
+  int seed;
+} game;
+
+game initGame ();
 
 void runGame ();
 

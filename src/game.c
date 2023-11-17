@@ -8,28 +8,38 @@
 #include <stdio.h>
 #include <time.h>
 
+game
+initGame ()
+{
+  game g;
+  g.screenWidth = 265 * 3;
+  g.screenHeight = 199 * 3;
+
+  g.seed = time (NULL);
+
+  SetTraceLogLevel (LOG_ERROR);
+  InitWindow (g.screenWidth, g.screenHeight, "temp_window_title");
+  SetTargetFPS (60);
+
+  srand (g.seed);
+
+  return g;
+}
+
 void
 runGame ()
 {
+  game g = initGame ();
 
-  const int screenWidth = 804;
-  const int screenHeight = 604;
+  const int virtualScreenWidth = 265;
+  const int virtualScreenHeight = 199;
 
-  const int virtualScreenWidth = 201;
-  const int virtualScreenHeight = 151;
+  const int unitSize = 33;
 
-  SetTraceLogLevel (LOG_ERROR);
-  InitWindow (screenWidth, screenHeight, "temp_window_title");
-  SetTargetFPS (60);
-
-  int seed = time (NULL);
-  // seed = 1697559963;
-  // seed = 1699665000;
   printf ("\nRunning Main\n\n");
-  printf ("seed: %d\n", seed);
-  srand (seed);
+  printf ("seed: %d\n", g.seed);
 
-  const float virtualRatio = (float)screenWidth / (float)virtualScreenWidth;
+  const float virtualRatio = (float)g.screenWidth / (float)virtualScreenWidth;
 
   Camera2D worldSpaceCamera = { 0 }; // Game world camera
   worldSpaceCamera.zoom = 1.0f;
@@ -49,16 +59,16 @@ runGame ()
   Rectangle sourceRec = { 0.0f, 0.0f, (float)target.texture.width,
                           -(float)target.texture.height };
   Rectangle destRec
-      = { -virtualRatio, -virtualRatio, screenWidth + (virtualRatio * 2),
-          screenHeight + (virtualRatio * 2) };
+      = { -virtualRatio, -virtualRatio, g.screenWidth + (virtualRatio * 2),
+          g.screenHeight + (virtualRatio * 2) };
 
   Vector2 origin = { 0.0f, 0.0f };
 
   float cameraX = 0.0f;
   float cameraY = 0.0f;
 
-  hero *hero1 = newHero (paladin, "Uther", 25);
-  hero *hero2 = newHero (paladin, "Jaina", 25);
+  hero *hero1 = newHero (paladin, "hero1", 25);
+  hero *hero2 = newHero (paladin, "hero2", 25);
 
   match *match;
   match = newMatch (hero1, hero2);
@@ -106,13 +116,16 @@ runGame ()
                           = u->animationDb->animations[0][(int)u->color]
                                 ->sprites[0];
                       if (!u->hasFormation)
-                        DrawTexture (text, 1 + (y * 25), 1 + (x * 25), WHITE);
+                        DrawTexture (text, 1 + (y * unitSize),
+                                     1 + (x * unitSize), WHITE);
                       else
-                        DrawTexture (text, 1 + (y * 25), 1 + (x * 25),
+                        DrawTexture (text, 1 + (y * unitSize),
+                                     1 + (x * unitSize),
                                      (Color){ 120, 120, 120, 255 });
                     }
                   else
-                    DrawTexture (temp, 1 + (y * 25), 1 + (x * 25), WHITE);
+                    DrawTexture (temp, 1 + (y * unitSize), 1 + (x * unitSize),
+                                 WHITE);
                 }
             }
         }
@@ -127,35 +140,13 @@ runGame ()
       DrawTexturePro (target.texture, sourceRec, destRec, origin, 0.0f, WHITE);
       EndMode2D ();
 
-      // DrawText (
-      //     TextFormat ("Screen resolution: %ix%i", screenWidth,
-      //     screenHeight), 10, 10, 20, DARKBLUE);
-      // DrawText (TextFormat ("World resolution: %ix%i",
-      virtualScreenWidth,
-          //                       virtualScreenHeight),
-          //           10, 40, 20, DARKGREEN);
-          DrawFPS (GetScreenWidth () - 95, 10);
+      DrawFPS (GetScreenWidth () - 95, 10);
       EndDrawing ();
-
-      // // DRAW
-      // BeginDrawing ();
-      // ClearBackground (RAYWHITE);
-
-      // if (match->board1->board[0][0].occupied)
-      //   {
-      //     Texture2D text
-      //         = LoadTextureFromImage (match->board1->board[0][0]
-      //                                     .animationDb->animations[0][0]
-      //                                     ->sprites[0]);
-      //     DrawTexture (text, 10, 10, WHITE);
-      //   }
-      // DrawText ("Congrats! You created your first window!", 190, 200,
-      // 20,
-      //           BLACK);
-      // EndDrawing ();
     }
 
   freeMatch (match);
+  freeHero (hero1);
+  freeHero (hero2);
 
   CloseWindow ();
 

@@ -8,9 +8,9 @@
 
 typedef enum heroType
 {
-  paladin,
-  mechanic,
-  wizard
+  paladin = 0,
+  mechanic = 1,
+  wizard = 2
 } heroType;
 
 typedef struct Hero

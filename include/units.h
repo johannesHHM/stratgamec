@@ -14,9 +14,9 @@ typedef enum unitType
   mechanicWall = 2,
   wizardWall = 3,
 
-  spearman = 011,
-  swordman = 012,
-  archer = 013,
+  archer = 011,
+  spearman = 012,
+  swordman = 013,
   copter = 111,
   engineer = 112,
   bombling = 113

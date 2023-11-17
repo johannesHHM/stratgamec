@@ -335,7 +335,7 @@ makeWalls (board *b, hero *h)
                   removeUnit (b, x, y);
                   unit wall;
                   wall
-                      = initUnitFromProto (&h->protoWall, def, h->animationDb);
+                      = initUnitFromProto (&h->protoWall, red, h->animationDb);
                   b->board[x][y] = wall;
                 }
               else
