@@ -68,7 +68,7 @@ runGame ()
   float cameraY = 0.0f;
 
   hero *hero1 = newHero (paladin, "hero1", 25);
-  hero *hero2 = newHero (paladin, "hero2", 25);
+  hero *hero2 = newHero (mechanic, "hero2", 25);
 
   match *match;
   match = newMatch (hero1, hero2);
@@ -112,16 +112,18 @@ runGame ()
                   unit *u = &match->board1->board[x][y];
                   if (u->animationDb)
                     {
-                      Texture2D text
-                          = u->animationDb->animations[0][(int)u->color]
-                                ->sprites[0];
+                      tickUnitAnimationData (u);
+                      Texture2D *text = getUnitTexture (u);
+
+                      // = u->animationDb->animations[0][(int)u->color]
+                      //       ->sprites[0];
                       if (!u->hasFormation)
-                        DrawTexture (text, 1 + (y * unitSize),
+                        DrawTexture (*text, 1 + (y * unitSize),
                                      1 + (x * unitSize), WHITE);
                       else
-                        DrawTexture (text, 1 + (y * unitSize),
+                        DrawTexture (*text, 1 + (y * unitSize),
                                      1 + (x * unitSize),
-                                     (Color){ 120, 120, 120, 255 });
+                                     (Color){ 255, 255, 255, 120 });
                     }
                   else
                     DrawTexture (temp, 1 + (y * unitSize), 1 + (x * unitSize),

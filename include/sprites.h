@@ -6,10 +6,17 @@
 #define UNIT_ANIMATION_COUNT 4
 #define UNIT_STATES 1
 
-typedef enum unitAnimationState
+typedef enum AnimationState
 {
   idle = 0
-} unitAnimationState;
+} unitAnimState;
+
+typedef struct UnitAnimationStateData
+{
+  int sprite;     // index of sprite in animation
+  int frameCount; // count of frames
+  unitAnimState state;
+} unitAnimData;
 
 typedef struct Animation
 {
@@ -32,9 +39,7 @@ typedef struct HeroAnimationDatabase
 } heroAnimationDatabase;
 
 void printHeroAnimationDatabase (heroAnimationDatabase *db);
-
 heroAnimationDatabase *readHeroAnimationDatabase (int ht);
-
 void freeHeroAnimationDatabase (heroAnimationDatabase *db);
 
 unitAnimationDatabase *matchUnitToDatabase (int ut, heroAnimationDatabase *db);

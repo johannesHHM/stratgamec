@@ -59,6 +59,10 @@ initUnitFromProto (unitPrototype *up, colorG c, heroAnimationDatabase *hdb)
   u.firstFormation = false;
   u.animationDb = matchUnitToDatabase ((int)u.type, hdb);
 
+  u.animData.frameCount = 0;
+  u.animData.sprite = 0;
+  u.animData.state = idle;
+
   return u;
 }
 
@@ -232,6 +236,29 @@ readWall (unitPrototype *protoWall, int *lvl1Wall, int *lvl2Wall,
     }
 
   fclose (file);
+}
+
+void
+tickUnitAnimationData (unit *u)
+{
+  int frameLength, spritesLength;
+  frameLength = u->animationDb->animations[u->animData.state][u->color]
+                    ->frameCounts[u->animData.sprite];
+  spritesLength
+      = u->animationDb->animations[u->animData.state][u->color]->spritesLen;
+
+  u->animData.frameCount = (u->animData.frameCount + 1) % frameLength;
+  if (u->animData.frameCount == 0)
+    {
+      u->animData.sprite = (u->animData.sprite + 1) % spritesLength;
+    }
+}
+
+Texture2D *
+getUnitTexture (unit *u)
+{
+  return &u->animationDb->animations[u->animData.state][u->color]
+              ->sprites[u->animData.sprite];
 }
 
 void

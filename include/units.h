@@ -42,6 +42,7 @@ typedef struct Unit
   formation3x1 *formation3x1;
 
   unitAnimationDatabase *animationDb;
+  unitAnimData animData;
 } unit;
 
 typedef struct UnitPrototype
@@ -85,6 +86,9 @@ void readFormations3x1 (formationPrototype3x1 *prototypeList, int ht);
 
 formation3x1 *newFormationFromProto3x1 (formationPrototype3x1 *fp, colorG c);
 void freeFormation3x1 (formation3x1 *f);
+
+void tickUnitAnimationData (unit *u);
+Texture2D *getUnitTexture (unit *u);
 
 void printUnit (unit *u);
 

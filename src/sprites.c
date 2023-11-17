@@ -177,6 +177,12 @@ freeHeroAnimationDatabase (heroAnimationDatabase *db)
   db = NULL;
 }
 
+animation *
+getUnitAnimation (unitAnimationDatabase *db, int state, int color)
+{
+  return db->animations[state][color];
+}
+
 unitAnimationDatabase *
 matchUnitToDatabase (int ut, heroAnimationDatabase *db)
 {
