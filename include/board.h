@@ -2,6 +2,7 @@
 #define _BOARD_H_
 
 #include "heros.h"
+#include "types.h"
 
 #include <stdbool.h>
 
@@ -24,8 +25,14 @@ board *newBoard (int maxUnits);
 void freeBoard (board *b);
 
 bool sendUnit (board *b, unit u, int y);
+bool sendUnitBackup (board *b, unit u, int y);
 bool removeUnit (board *b, int x, int y);
-bool sendBackupUnits (board *b, int amount, hero *h);
+bool sendBackupUnits (board *b, hero *h);
+
+int getTopFree (board *b, int y);
+point getTopUnit (board *b, int y);
+bool moveUnitToColumn (board *b, point p0, int y1);
+bool moveUnit (board *b, int x0, int y0, int x1, int y1);
 
 bool checkTagsNeeded (board *b);
 bool checkAttack3x1 (board *b);
@@ -40,6 +47,7 @@ void makeWalls (board *b, hero *h);
 
 void sinkWalls (board *b);
 void sinkAttacks3x1 (board *b);
+void sinkUnits (board *b);
 
 void makeAttacks3x1 (board *b, hero *h);
 

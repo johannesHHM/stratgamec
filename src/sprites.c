@@ -131,7 +131,7 @@ readHeroAnimationDatabase (int ht)
                 {
                   char *filename;
                   asprintf (&filename, "data/hero/%d/sprites/%d/%d/%d_%d.png",
-                            ht, ut, anim, f, c);
+                            ht, ut, anim, c, f);
                   currentAnim->sprites[f] = LoadTexture (filename);
                   free (filename);
                 }
@@ -175,12 +175,6 @@ freeHeroAnimationDatabase (heroAnimationDatabase *db)
   free (db->unitAnimationDatabase);
   free (db);
   db = NULL;
-}
-
-animation *
-getUnitAnimation (unitAnimationDatabase *db, int state, int color)
-{
-  return db->animations[state][color];
 }
 
 unitAnimationDatabase *

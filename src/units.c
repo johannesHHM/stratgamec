@@ -261,6 +261,23 @@ getUnitTexture (unit *u)
               ->sprites[u->animData.sprite];
 }
 
+bool
+canBeMoved (unit *u)
+{
+  if ((int)u->type < 10)
+    return false;
+  if (u->hasFormation)
+    return false;
+  return true;
+}
+bool
+canBeRemoved (unit *u)
+{
+  if (u->hasFormation)
+    return false;
+  return true;
+}
+
 void
 printUnit (unit *u)
 {

@@ -13,26 +13,26 @@
 void
 testBoard ()
 {
-  InitWindow (100, 100, "temp_window_title");
+  //   InitWindow (100, 100, "temp_window_title");
 
-  board *b = newBoard (25);
-  hero *h = newHero (paladin, "Uther", 25);
+  //   board *b = newBoard (25);
+  //   hero *h = newHero (paladin, "Uther", 25);
 
-  unit redArcher0
-      = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
-  unit redArcher1
-      = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
-  unit redArcher2
-      = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
-  unit redArcher3
-      = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
-  unit redArcher4
-      = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
+  //   unit redArcher0
+  //       = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
+  //   unit redArcher1
+  //       = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
+  //   unit redArcher2
+  //       = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
+  //   unit redArcher3
+  //       = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
+  //   unit redArcher4
+  //       = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
 
-  unit redArcher5
-      = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
-  unit redArcher6
-      = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
+  //   unit redArcher5
+  //       = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
+  //   unit redArcher6
+  //       = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
   //   unit redArcher7
   //       = initUnitFromProto (&h->unitProtoList[0], 0, h->animationDb);
 
@@ -45,57 +45,75 @@ testBoard ()
   //   unit greenArcher3
   //       = initUnitFromProto (&h->unitProtoList[0], 1, h->animationDb);
 
-  // unit blueArcher0 = initUnitFromProto (&h->unitProtoList[0], 2);
-  // unit blueArcher1 = initUnitFromProto (&h->unitProtoList[0], 2);
-  // unit blueArcher2 = initUnitFromProto (&h->unitProtoList[0], 2);
+  //   unit blueArcher0
+  //       = initUnitFromProto (&h->unitProtoList[0], 2, h->animationDb);
+  //   unit blueArcher1
+  //       = initUnitFromProto (&h->unitProtoList[0], 2, h->animationDb);
+  //   unit blueArcher2
+  //       = initUnitFromProto (&h->unitProtoList[0], 2, h->animationDb);
 
-  sendUnit (b, redArcher0, 0);
-  sendUnit (b, redArcher1, 0);
-  sendUnit (b, redArcher2, 0);
+  //   sendUnit (b, redArcher0, 0);
+  //   sendUnit (b, redArcher1, 1);
+  //   sendUnit (b, redArcher2, 2);
 
-  // sendUnit (b, blueArcher0, 0);
-  // sendUnit (b, blueArcher1, 0);
-  // sendUnit (b, blueArcher2, 0);
+  //   sinkUnits (b);
+  //   tagWalls (b);
+  //   tagAttacks3x1 (b);
+  //   makeWalls (b, h);
+  //   sinkWalls (b);
+  //   makeAttacks3x1 (b, h);
+  //   sinkAttacks3x1 (b);
 
-  sendUnit (b, redArcher5, 1);
-  sendUnit (b, redArcher6, 2);
-  // sendUnit (b, greenArcher2, 1);
-  // sendUnit (b, greenArcher3, 2);
+  //   sendUnit (b, redArcher0, 0);
+  //   sendUnit (b, redArcher1, 1);
+  //   sendUnit (b, redArcher2, 2);
 
-  printBoard (b);
+  //   sinkUnits (b);
+  //   tagWalls (b);
+  //   tagAttacks3x1 (b);
+  //   makeWalls (b, h);
+  //   sinkWalls (b);
+  //   makeAttacks3x1 (b, h);
+  //   sinkAttacks3x1 (b);
 
-  tagWalls (b);
-  tagAttacks3x1 (b);
+  //   sendUnit (b, greenArcher0, 0);
+  //   sendUnit (b, greenArcher1, 1);
+  //   sendUnit (b, greenArcher2, 2);
 
-  printBoard (b);
+  //   sinkUnits (b);
+  //   tagWalls (b);
+  //   tagAttacks3x1 (b);
+  //   makeWalls (b, h);
+  //   sinkWalls (b);
+  //   makeAttacks3x1 (b, h);
+  //   sinkAttacks3x1 (b);
 
-  makeWalls (b, h);
-  makeAttacks3x1 (b, h);
+  //   printBoard (b);
 
-  printBoard (b);
+  //   sendUnit (b, blueArcher0, 0);
+  //   sendUnit (b, blueArcher1, 1);
+  //   sendUnit (b, blueArcher2, 2);
 
-  sinkWalls (b);
+  //   printBoard (b);
 
-  printBoard (b);
+  //   sinkUnits (b);
+  //   tagWalls (b);
+  //   //   tagAttacks3x1 (b);
+  //   //   makeWalls (b, h);
+  //   //   sinkWalls (b);
+  //   //   makeAttacks3x1 (b, h);
+  //   //   sinkAttacks3x1 (b);
 
-  sendUnit (b, redArcher3, 1);
-  sendUnit (b, redArcher4, 2);
+  //   //   // sendUnit (b, blueArcher0, 0);
+  //   //   // sendUnit (b, blueArcher1, 0);
+  //   //   // sendUnit (b, blueArcher2, 0);
 
-  printBoard (b);
+  //   //   sendUnit (b, redArcher5, 1);
+  //   //   sendUnit (b, redArcher6, 2);
+  //   //   // sendUnit (b, greenArcher2, 1);
+  //   //   // sendUnit (b, greenArcher3, 2);
 
-  tagWalls (b);
-  tagAttacks3x1 (b);
-
-  printBoard (b);
-
-  makeWalls (b, h);
-  makeAttacks3x1 (b, h);
-
-  printBoard (b);
-
-  sinkWalls (b);
-
-  printBoard (b);
+  //   printBoard (b);
   exit (0);
 }
 

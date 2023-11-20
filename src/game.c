@@ -12,10 +12,11 @@ game
 initGame ()
 {
   game g;
-  g.screenWidth = 265 * 3;
-  g.screenHeight = 199 * 3;
+  g.screenWidth = 265 * 4;
+  g.screenHeight = 199 * 4;
 
   g.seed = time (NULL);
+  // g.seed = 1700452227;
 
   SetTraceLogLevel (LOG_ERROR);
   InitWindow (g.screenWidth, g.screenHeight, "temp_window_title");
@@ -67,8 +68,8 @@ runGame ()
   float cameraX = 0.0f;
   float cameraY = 0.0f;
 
-  hero *hero1 = newHero (paladin, "hero1", 25);
-  hero *hero2 = newHero (mechanic, "hero2", 25);
+  hero *hero1 = newHero (paladin, "hero1", 30);
+  hero *hero2 = newHero (paladin, "hero2", 30);
 
   match *match;
   match = newMatch (hero1, hero2);
@@ -76,6 +77,7 @@ runGame ()
   // GAME LOOP
   while (!WindowShouldClose ())
     {
+      printf ("seed: %d\n", g.seed);
 
       runMatch (match);
 
@@ -102,6 +104,28 @@ runGame ()
       // Board background
       DrawTexture (board, 0, 0, WHITE);
 
+      // Draw cursor
+      DrawRectangle (match->cursorPosition.y * unitSize + 1,
+                     match->cursorPosition.x * unitSize + 1, 32, 32,
+                     (Color){ 255, 213, 0, 200 });
+
+      // Draw hover guy
+      if (match->hasUnitSelected)
+        {
+          if (match->selectedUnit.animationDb)
+            {
+              Texture2D *text = getUnitTexture (&match->selectedUnit);
+              DrawTexture (*text, 1 + (match->selectedPosition.y * unitSize),
+                           1 + (match->selectedPosition.x * unitSize),
+                           (Color){ 255, 255, 255, 100 });
+            }
+          else
+            {
+              DrawTexture (temp, 1 + (match->selectedPosition.y * unitSize),
+                           1 + (match->selectedPosition.x * unitSize), WHITE);
+            }
+        }
+
       // Draw board units
       for (int x = 0; x < 6; ++x)
         {
@@ -115,8 +139,6 @@ runGame ()
                       tickUnitAnimationData (u);
                       Texture2D *text = getUnitTexture (u);
 
-                      // = u->animationDb->animations[0][(int)u->color]
-                      //       ->sprites[0];
                       if (!u->hasFormation)
                         DrawTexture (*text, 1 + (y * unitSize),
                                      1 + (x * unitSize), WHITE);
@@ -136,13 +158,34 @@ runGame ()
       EndTextureMode ();
 
       BeginDrawing ();
-      ClearBackground (RED);
+      // ClearBackground (RED);
 
       BeginMode2D (screenSpaceCamera);
       DrawTexturePro (target.texture, sourceRec, destRec, origin, 0.0f, WHITE);
+
       EndMode2D ();
 
-      DrawFPS (GetScreenWidth () - 95, 10);
+      if (match->debug)
+        {
+          DrawRectangle (5, 5, 260, 100, (Color){ 255, 255, 255, 200 });
+
+          DrawText (TextFormat ("FPS: %d", GetFPS ()), 10, 10, 20, BLACK);
+
+          DrawText (TextFormat ("pointSelected: (%d, %d)",
+                                match->cursorPosition.x,
+                                match->cursorPosition.y),
+                    10, 30, 20, BLACK);
+          if (match->hasUnitSelected)
+            DrawText (
+                TextFormat ("unitSelected: %s", match->selectedUnit.name), 10,
+                50, 20, BLACK);
+          else
+            DrawText ("unitSelected: None", 10, 50, 20, BLACK);
+
+          DrawText (TextFormat ("backupUnits: %d", match->board1->backupUnits),
+                    10, 70, 20, BLACK);
+        }
+
       EndDrawing ();
     }
 

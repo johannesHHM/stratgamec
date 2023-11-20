@@ -90,6 +90,9 @@ void freeFormation3x1 (formation3x1 *f);
 void tickUnitAnimationData (unit *u);
 Texture2D *getUnitTexture (unit *u);
 
+bool canBeMoved (unit *u);
+bool canBeRemoved (unit *u);
+
 void printUnit (unit *u);
 
 #endif

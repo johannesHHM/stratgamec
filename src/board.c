@@ -1,5 +1,6 @@
 #include "board.h"
 #include "heros.h"
+#include "types.h"
 #include "units.h"
 
 #include <ctype.h>
@@ -89,14 +90,28 @@ bool
 sendUnit (board *b, unit u, int y)
 {
   if (b->board[b->HIGHT - 1][y].occupied)
-    {
-      return false;
-    }
+    return false;
+
   int x = b->HIGHT - 1;
+
   while (x >= 0 && !b->board[x][y].occupied)
-    {
-      x--;
-    }
+    x--;
+
+  b->board[x + 1][y] = u;
+  return true;
+}
+
+bool
+sendUnitBackup (board *b, unit u, int y)
+{
+  if (b->board[b->HIGHT - 1][y].occupied)
+    return false;
+
+  int x = b->HIGHT - 1;
+
+  while (x >= 0 && !b->board[x][y].occupied)
+    x--;
+
   b->board[x + 1][y] = u;
   if (checkTagsNeeded (b))
     {
@@ -106,14 +121,14 @@ sendUnit (board *b, unit u, int y)
   return true;
 }
 
+// TODO if all units that can be sent creates
+// a wall or attack, will loop forever
 bool
-sendBackupUnits (board *b, int amount, hero *h)
+sendBackupUnits (board *b, hero *h)
 {
-  if (b->backupUnits < amount)
-    return false;
   if (checkFullBoard (b))
     return false;
-  for (int i = 0; i < amount; ++i)
+  while (b->backupUnits > 0)
     {
       bool response = false;
       while (!response)
@@ -121,12 +136,38 @@ sendBackupUnits (board *b, int amount, hero *h)
           unit u = initUnitFromProto (&h->unitProtoList[rand () % 3],
                                       randColor (), h->animationDb);
           int random = rand () % b->WIDTH;
-          response = sendUnit (b, u, random);
+          response = sendUnitBackup (b, u, random);
           if (response)
             b->backupUnits--;
         }
     }
   return true;
+}
+
+int
+getTopFree (board *b, int y)
+{
+  if (b->board[b->HIGHT - 1][y].occupied)
+    return -1;
+
+  int x = 0;
+  while (x < b->HIGHT && b->board[x][y].occupied)
+    x++;
+
+  return x - 1;
+}
+
+point
+getTopUnit (board *b, int y)
+{
+  if (!b->board[0][y].occupied)
+    return (point){ -1, -1 };
+
+  int x = 0;
+  while (x < b->HIGHT && b->board[x][y].occupied)
+    x++;
+
+  return (point){ x - 1, y };
 }
 
 bool
@@ -180,6 +221,10 @@ tagAttacks3x1 (board *b)
         {
           if (!b->board[x][y].occupied || !b->board[x + 1][y].occupied
               || !b->board[x + 2][y].occupied)
+            continue;
+          if ((int)b->board[x][y].type < 10
+              || (int)b->board[x + 1][y].type < 10
+              || (int)b->board[x + 2][y].type < 10)
             continue;
           if (cmpUnits (&b->board[x][y], &b->board[x + 1][y])
               && cmpUnits (&b->board[x][y], &b->board[x + 2][y])
@@ -250,6 +295,7 @@ checkAttack3x1 (board *b)
   return false;
 }
 
+// TODO on false always rn
 bool
 checkTagsNeeded (board *b)
 {
@@ -271,12 +317,33 @@ checkFullBoard (board *b)
 bool
 moveUnit (board *b, int x0, int y0, int x1, int y1)
 {
+  if (x0 == x1 && y0 == y1)
+    return true;
   if (!b->board[x0][y0].occupied)
     return false;
   if (b->board[x1][y1].occupied)
     return false;
   b->board[x1][y1] = b->board[x0][y0];
   b->board[x0][y0].occupied = false;
+  return true;
+}
+
+bool
+moveUnitToColumn (board *b, point p0, int y1)
+{
+  if (!b->board[p0.x][p0.y].occupied)
+    return false;
+
+  if (b->board[b->HIGHT - 1][y1].occupied)
+    return false;
+
+  int x = b->HIGHT - 1;
+
+  while (x >= 0 && !b->board[x][y1].occupied)
+    x--;
+
+  b->board[x + 1][y1] = b->board[p0.x][p0.y];
+  b->board[p0.x][p0.y].occupied = false;
   return true;
 }
 
@@ -346,7 +413,8 @@ makeWalls (board *b, hero *h)
                     {
                       removeUnit (b, wallX, y);
                       unit wall;
-                      wall = initUnitFromProto (&h->protoWall, def,
+                      // TODO wall color?
+                      wall = initUnitFromProto (&h->protoWall, 0,
                                                 h->animationDb);
                       b->board[wallX][y] = wall;
                     }
@@ -432,6 +500,27 @@ sinkAttacks3x1 (board *b)
                   && b->board[x + 1][y].hasFormation)
                 {
                   swapUnits (b, x, y, x + 1, y);
+                  updated = true;
+                }
+            }
+        }
+    }
+}
+
+void
+sinkUnits (board *b)
+{
+  bool updated = true;
+  while (updated)
+    {
+      updated = false;
+      for (int y = 0; y < b->WIDTH; y++)
+        {
+          for (int x = 0; x < b->HIGHT - 1; x++)
+            {
+              if (!b->board[x][y].occupied && b->board[x + 1][y].occupied)
+                {
+                  moveUnit (b, x + 1, y, x, y);
                   updated = true;
                 }
             }
