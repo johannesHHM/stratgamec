@@ -198,16 +198,19 @@ void
 testAnim ()
 {
   SetTraceLogLevel (LOG_ERROR);
+  InitWindow (100, 100, "TEST_ANIM_WINDOW");
+  SetTargetFPS (60);
 
   hero *h = newHero (paladin, "Uther", 25);
 
-  heroAnimationDatabase *db = readHeroAnimationDatabase ((int)h->type);
+  // heroAnimationDatabase *db = readHeroAnimationDatabase ((int)h->type);
 
-  printHeroAnimationDatabase (db);
+  // printHeroAnimationDatabase (h->animationDb);
 
-  freeHeroAnimationDatabase (db);
+  // freeHeroAnimationDatabase (db);
 
   freeHero (h);
+  CloseWindow ();
 
   exit (0);
 }
@@ -215,8 +218,8 @@ testAnim ()
 int
 main ()
 {
-  // testAnim ();
-  // testBoard ();
+  testAnim ();
+  //  testBoard ();
   runGame ();
   exit (0);
 }

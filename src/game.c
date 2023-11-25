@@ -41,8 +41,7 @@ runGame ()
 
   const int unitSize = 20;
 
-  printf ("\nRunning Game\n\n");
-  printf ("seed: %d\n", g.seed);
+  printf ("\nseed: %d\n\n", g.seed);
 
   const float virtualRatio = (float)g.screenWidth / (float)virtualScreenWidth;
 
@@ -57,9 +56,6 @@ runGame ()
 
   Texture2D board = LoadTexture ("data/board-outline.png");
   Texture2D temp = LoadTexture ("data/temp-missing-unit.png");
-
-  printf ("HELLO!\n");
-  fflush (stdout);
 
   Rectangle sourceRec = { 0.0f, 0.0f, (float)target.texture.width,
                           -(float)target.texture.height };

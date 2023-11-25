@@ -33,9 +33,10 @@ printHeroAnimationDatabase (heroAnimationDatabase *db)
             printf ("sprites:\n");
             for (int i = 0; i < anim->spritesLen; i++)
               {
-                printf ("%d: (%d,%d)\n", i, anim->sprites[i].width,
+                printf ("  %d: (%d,%d)\n", i, anim->sprites[i].width,
                         anim->sprites[i].height);
               }
+            printf ("\n");
           }
     }
   printf ("\n");
@@ -48,100 +49,190 @@ readHeroAnimationDatabase (int ht)
 {
   FILE *animationsFile;
 
-  char *filename;
-  asprintf (&filename, "data/hero/%d/animations", ht);
-  animationsFile = fopen (filename, "r");
-  free (filename);
+  char *animationsFilePath;
+  asprintf (&animationsFilePath, "data/hero/%d/animations/animationsData", ht);
+  animationsFile = fopen (animationsFilePath, "r");
 
   if (animationsFile == NULL)
     {
-      printf ("Error opening animations file.\n");
+      fprintf (stderr,
+               "[ERROR] could not open animationsData file\n"
+               "        file path: %s\n"
+               "        hero type: %d\n",
+               animationsFilePath, ht);
+      free (animationsFilePath);
+
+      return NULL;
     }
+
+  free (animationsFilePath);
 
   int read = 0;
   // int records = 0;
 
-  int animationCountOLD = -1;
-  read = fscanf (animationsFile, "%d\n", &animationCountOLD);
+  int unitAmount = 0;
+  read = fscanf (animationsFile, "%d\n", &unitAmount);
   if (read != 1)
-    printf ("Error could not read animation count.\n");
+    {
+      fprintf (stderr,
+               "[ERROR] could not parse unit count (first line, integer) from "
+               "animations file\n"
+               "        file path: data/hero/%d/animationsData\n"
+               "        hero type: %d\n",
+               ht, ht);
+      fclose (animationsFile);
+
+      return NULL;
+    }
 
   heroAnimationDatabase *heroDatabase;
   heroDatabase = malloc (sizeof (heroAnimationDatabase));
   heroDatabase->unitAnimationDatabase
-      = malloc (animationCountOLD * sizeof (unitAnimationDatabase));
+      = malloc (unitAmount * sizeof (unitAnimationDatabase));
 
-  int unitCount = 0;
-  for (int _ = 0; _ < animationCountOLD; _++)
+  for (int unitCount = 0; unitCount < unitAmount; unitCount++)
     {
-      int ut;
-      int animationCount;
-      read = fscanf (animationsFile, "%d,%d\n", &ut, &animationCount);
+      int unitType;
+      int animationAmount;
+      char unitName[20];
 
-      // printf ("ut: %d, ac: %d\n", ut, animationCount);
+      read = fscanf (animationsFile, "%d,%19[^,],%d\n", &unitType, unitName,
+                     &animationAmount);
 
-      unitAnimationDatabase *uAniDb;
-      uAniDb = malloc (sizeof (unitAnimationDatabase));
-      uAniDb->unitType = ut;
-      uAniDb->stateCount = animationCount;
-      uAniDb->animations = malloc (animationCount * sizeof (animation *));
-      for (int i = 0; i < animationCount; i++)
-        uAniDb->animations[i] = malloc (COLOR_COUNT * sizeof (animation *));
-
-      for (int anim = 0; anim < animationCount; anim++)
+      if (read != 3)
         {
-          FILE *animationFile;
-          char *filename;
-          asprintf (&filename, "data/hero/%d/sprites/%d/%d/animation", ht, ut,
-                    anim);
-          animationFile = fopen (filename, "r");
-          free (filename);
+          fprintf (stderr,
+                   "[ERROR] could not parse animationsData file\n"
+                   "        file path: data/hero/%d/animationsData\n"
+                   "        line number: %d\n"
+                   "        hero type: %d\n",
+                   ht, unitCount + 1, ht);
 
-          int spritesLength = 0;
-          int *frameCounts;
-          read = fscanf (animationFile, "%d;", &spritesLength);
+          return NULL;
+        }
 
-          frameCounts = malloc (spritesLength * sizeof (int));
-          for (int f = 0; f < spritesLength; f++)
+      // fprintf (stdout, "unitType: %d, unitName: %s, animAmount: %d\n",
+      //          unitType, unitName, animationAmount);
+
+      unitAnimationDatabase *unitDatabase;
+      unitDatabase = malloc (sizeof (unitAnimationDatabase));
+      unitDatabase->unitType = unitType;
+      unitDatabase->stateCount = animationAmount;
+      unitDatabase->animations
+          = malloc (animationAmount * sizeof (animation *));
+      for (int i = 0; i < animationAmount; i++)
+        unitDatabase->animations[i]
+            = malloc (COLOR_COUNT * sizeof (animation *));
+
+      FILE *animationDataFile;
+      char *animationFilePath;
+      asprintf (&animationFilePath, "data/hero/%d/animations/%s/animationData",
+                ht, unitName);
+      animationDataFile = fopen (animationFilePath, "r");
+
+      if (animationDataFile == NULL)
+        {
+          fprintf (stderr,
+                   "[ERROR] could not open animationData file\n"
+                   "        file path: %s\n"
+                   "        unit: %s\n"
+                   "        hero type: %d\n",
+                   animationFilePath, unitName, ht);
+          free (animationFilePath);
+
+          return NULL;
+        }
+
+      free (animationFilePath);
+
+      char animationName[20];
+      int animationFrameAmount;
+
+      for (int animationCount = 0; animationCount < animationAmount;
+           animationCount++)
+        {
+          read = fscanf (animationDataFile, "%19[^:]:%d;", animationName,
+                         &animationFrameAmount);
+
+          if (read != 2)
             {
-              read = fscanf (animationFile, "%d,", &frameCounts[f]);
+              fprintf (stderr,
+                       "[ERROR] could not parse animationData file\n"
+                       "        file path: "
+                       "data/hero/%d/animations/%s/animationData\n"
+                       "        hero type: %d\n",
+                       ht, unitName, ht);
+
+              return NULL;
             }
 
-          // printf ("read: %d\n", read);
+          // printf ("%s:%d\n", animationName, animationFrameAmount);
+
+          int *frameCounts;
+          frameCounts = malloc (animationFrameAmount * sizeof (int));
+          for (int f = 0; f < animationFrameAmount; f++)
+            {
+              if (f < animationFrameAmount - 1)
+                read = fscanf (animationDataFile, "%d,", &frameCounts[f]);
+              else
+                read = fscanf (animationDataFile, "%d\n", &frameCounts[f]);
+
+              if (read != 1)
+                {
+                  fprintf (stderr,
+                           "[ERROR] could not parse animationData file\n"
+                           "        file path: "
+                           "data/hero/%d/animations/%s/animationData\n"
+                           "        unit: %s\n"
+                           "        hero type: %d\n",
+                           ht, unitName, unitName, ht);
+
+                  return NULL;
+                }
+            }
 
           for (int c = 0; c < COLOR_COUNT; c++)
             {
               animation *currentAnim;
               currentAnim = malloc (sizeof (animation));
-              currentAnim->spritesLen = spritesLength;
+              currentAnim->spritesLen = animationFrameAmount;
 
               currentAnim->frameCounts
                   = malloc (currentAnim->spritesLen * sizeof (int));
               memcpy (currentAnim->frameCounts, frameCounts,
                       currentAnim->spritesLen * sizeof (int));
 
-              // printf ("IN: spritesLen: %d\n", currentAnim->spritesLen);
-
-              // printf ("spritesLen: %d\n", currAnim.spritesLen);
-
               currentAnim->sprites
-                  = malloc (currentAnim->spritesLen * sizeof (Image));
+                  = malloc (currentAnim->spritesLen * sizeof (Texture2D));
 
               for (int f = 0; f < currentAnim->spritesLen; f++)
                 {
-                  char *filename;
-                  asprintf (&filename, "data/hero/%d/sprites/%d/%d/%d_%d.png",
-                            ht, ut, anim, c, f);
-                  currentAnim->sprites[f] = LoadTexture (filename);
-                  free (filename);
+                  char *texturePath;
+                  asprintf (&texturePath,
+                            "data/hero/%d/animations/%s/%s/%d_%d.png", ht,
+                            unitName, animationName, c, f);
+                  currentAnim->sprites[f] = LoadTexture (texturePath);
+                  if (currentAnim->sprites[f].id <= 0)
+                    {
+                      fprintf (
+                          stderr,
+                          "[ERROR] could not load texture (in animation)\n"
+                          "        file path: %s\n"
+                          "        unit: %s\n"
+                          "        hero type: %d\n",
+                          texturePath, unitName, ht);
+
+                      return NULL;
+                    }
+                  free (texturePath);
                 }
-              uAniDb->animations[anim][c] = currentAnim;
+              unitDatabase->animations[animationCount][c] = currentAnim;
             }
           free (frameCounts);
         }
-      heroDatabase->unitAnimationDatabase[unitCount] = uAniDb;
-      unitCount++;
+      heroDatabase->unitAnimationDatabase[unitCount] = unitDatabase;
     }
+  fclose (animationsFile);
 
   return heroDatabase;
 }

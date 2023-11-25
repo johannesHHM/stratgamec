@@ -27,6 +27,7 @@ newHero (heroType hc, char *n, int maxUnits)
 void
 freeHero (hero *h)
 {
+  freeHeroAnimationDatabase (h->animationDb);
   free (h);
   h = NULL;
 }
