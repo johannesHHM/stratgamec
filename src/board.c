@@ -97,7 +97,7 @@ sendUnit (board *b, unit u, int y)
   while (x >= 0 && !b->board[x][y].occupied)
     x--;
   // TODO im settign this shit twice rn, kinda meh
-  setUnitAnimationState (&u, walking, (WIDTH_C - x + 1) * 32, 0, true);
+  setUnitAnimationState (&u, walking, (WIDTH_C - x + 1) * UNIT_SIZE, 0, true);
   b->board[x + 1][y] = u;
 
   return true;
@@ -114,7 +114,7 @@ sendUnitBackup (board *b, unit u, int y)
   while (x >= 0 && !b->board[x][y].occupied)
     x--;
 
-  setUnitAnimationState (&u, walking, (WIDTH_C + 1) * 32, 0, true);
+  setUnitAnimationState (&u, walking, (WIDTH_C + 1) * UNIT_SIZE, 0, true);
   b->board[x + 1][y] = u;
   if (checkTagsNeeded (b))
     {
@@ -591,11 +591,11 @@ updateWalkingUnit (board *b, int x, int y, int direction)
 {
   if (b->board[x][y].animData.state == walking)
     {
-      b->board[x][y].animData.offX += 32 * direction;
+      b->board[x][y].animData.offX += UNIT_SIZE * direction;
     }
   else
     {
-      setUnitAnimationState (&b->board[x][y], walking, 32 * direction, 0,
-                             true);
+      setUnitAnimationState (&b->board[x][y], walking, UNIT_SIZE * direction,
+                             0, true);
     }
 }

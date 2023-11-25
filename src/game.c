@@ -8,15 +8,14 @@
 #include <stdio.h>
 #include <time.h>
 
-#define UNIT_SIZE 32
-#define ZOOM 4
+#define ZOOM 5
 
 game
 initGame ()
 {
   game g;
-  g.screenWidth = (UNIT_SIZE * HIGHT_C * ZOOM);
-  g.screenHeight = (UNIT_SIZE * WIDTH_C * ZOOM);
+  g.screenWidth = UNIT_SIZE * HIGHT_C * ZOOM;
+  g.screenHeight = UNIT_SIZE * WIDTH_C * ZOOM;
 
   g.seed = time (NULL);
   g.seed = 1700843513;
@@ -35,12 +34,14 @@ runGame ()
 {
   game g = initGame ();
 
-  const int virtualScreenWidth = UNIT_SIZE * HIGHT_C;
-  const int virtualScreenHeight = UNIT_SIZE * WIDTH_C;
+  const int virtualScreenWidth = UNIT_SIZE * HIGHT_C + 4;
+  const int virtualScreenHeight = UNIT_SIZE * WIDTH_C + 4;
 
-  const int unitSize = 32;
+  const int offset[2] = { 1, 1 };
 
-  printf ("\nRunning Main\n\n");
+  const int unitSize = 20;
+
+  printf ("\nRunning Game\n\n");
   printf ("seed: %d\n", g.seed);
 
   const float virtualRatio = (float)g.screenWidth / (float)virtualScreenWidth;
@@ -112,9 +113,9 @@ runGame ()
       DrawTexture (board, 0, 0, WHITE);
 
       // Draw cursor
-      DrawRectangle (match->cursorPosition.y * unitSize + 1,
-                     match->cursorPosition.x * unitSize + 1, 32, 32,
-                     (Color){ 255, 213, 0, 200 });
+      DrawRectangle (match->cursorPosition.y * unitSize + 1 + offset[0],
+                     match->cursorPosition.x * unitSize + 1 + offset[1],
+                     UNIT_SIZE, UNIT_SIZE, (Color){ 255, 213, 0, 200 });
 
       // Draw hover guy
       if (match->hasUnitSelected)
@@ -122,14 +123,18 @@ runGame ()
           if (match->selectedUnit.animationDb)
             {
               Texture2D *text = getUnitTexture (&match->selectedUnit);
-              DrawTexture (*text, 1 + (match->selectedPosition.y * unitSize),
-                           1 + (match->selectedPosition.x * unitSize),
-                           (Color){ 255, 255, 255, 100 });
+              DrawTexture (
+                  *text,
+                  1 + (match->selectedPosition.y * unitSize) + offset[0],
+                  1 + (match->selectedPosition.x * unitSize) + offset[1],
+                  (Color){ 255, 255, 255, 100 });
             }
           else
             {
-              DrawTexture (temp, 1 + (match->selectedPosition.y * unitSize),
-                           1 + (match->selectedPosition.x * unitSize), WHITE);
+              DrawTexture (
+                  temp, 1 + (match->selectedPosition.y * unitSize) + offset[0],
+                  1 + (match->selectedPosition.x * unitSize) + offset[1],
+                  WHITE);
             }
         }
 
@@ -143,8 +148,10 @@ runGame ()
 
                   unit *u = &match->board1->board[x][y];
 
-                  int posY = 1 + (y * unitSize) + (u->animData.offY);
-                  int posX = 1 + (x * unitSize) + (u->animData.offX);
+                  int posY, posX;
+
+                  posY = 1 + (y * unitSize) + (u->animData.offY) + offset[0];
+                  posX = 1 + (x * unitSize) + (u->animData.offX) + offset[1];
 
                   if (u->animationDb)
                     {

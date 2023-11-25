@@ -6,6 +6,8 @@
 
 #include <stdbool.h>
 
+#define UNIT_SIZE 20
+
 #define WALK_SPEED 4
 
 typedef struct Formation3x1 formation3x1;
