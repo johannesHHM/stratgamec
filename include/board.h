@@ -39,17 +39,20 @@ bool checkAttack3x1 (board *b);
 bool checkWall (board *b);
 
 bool checkFullBoard (board *b);
+bool checkLockedAnimations (board *b);
 
 void tagAttacks3x1 (board *b);
 void tagWalls (board *b);
 
-void makeWalls (board *b, hero *h);
+bool makeWalls (board *b, hero *h);
 
-void sinkWalls (board *b);
-void sinkAttacks3x1 (board *b);
-void sinkUnits (board *b);
+bool sinkWalls (board *b);
+bool sinkAttacks3x1 (board *b);
+bool sinkUnits (board *b);
 
-void makeAttacks3x1 (board *b, hero *h);
+bool makeAttacks3x1 (board *b, hero *h);
+
+void updateWalkingUnit (board *b, int x, int y, int direction);
 
 void printBoard (board *b);
 

@@ -5,6 +5,7 @@
 
 #include "raylib.h"
 
+#include <stdio.h>
 #include <unistd.h>
 
 match *
@@ -38,37 +39,125 @@ freeMatch (match *m)
 void
 runMatch (match *match)
 {
-  // match->board1->backupUnits = 1;
-  // usleep (500 * 1000);
+  bool skipRest = false;
+  for (int x = 0; x < 6; ++x)
+    {
+      for (int y = 0; y < 8; ++y)
+        {
+          unit *u;
+          u = &match->board1->board[x][y];
+          if (!u->occupied)
+            continue;
+          if (u->animData.state == poof)
+            {
+              tickUnitAnimationData (u);
+              skipRest = true;
+            }
+        }
+    }
+  if (skipRest)
+    goto skip;
 
+  for (int x = 0; x < 6; ++x)
+    {
+      for (int y = 0; y < 8; ++y)
+        {
+          unit *u;
+          u = &match->board1->board[x][y];
+          if (!u->occupied)
+            continue;
+
+          tickUnitAnimationData (u);
+          // skipRest = true;
+        }
+    }
+
+skip:
+
+  // match->board1->backupUnits = 1;
+  // usleep (50 * 1000);
+
+  // handleInput (match);
+
+  if (checkLockedAnimations (match->board1))
+    {
+      handleInputLocked (match);
+      return;
+    }
+  else
+    {
+
+      bool updated = false;
+      // TODO remove this thing
+      bool test = false;
+      /* TODO this has to loop */
+      // TODO animate when remove units (how to play the naimation when the
+      // unit is gone hmmm)
+
+      // TODO animations here! (walking animation)
+      updated = sinkUnits (match->board1);
+      // fprintf (stderr, "1st %d\n", updated);
+      if (updated)
+        goto skip_rest;
+
+      tagWalls (match->board1);
+      tagAttacks3x1 (match->board1);
+
+      // TODO animations here! (make wall animation)
+      updated = makeWalls (match->board1, match->hero1);
+      // fprintf (stderr, "2nd %d\n", updated);
+      if (updated && test)
+        goto skip_rest;
+
+      // TODO animations here! (make wall walking lul) (make moved units
+      // walk)
+      updated = sinkWalls (match->board1);
+      // fprintf (stderr, "3rd %d\n", updated);
+      if (updated && test)
+        goto skip_rest;
+
+      // TODO animations here! (make attack animation)
+      updated = makeAttacks3x1 (match->board1, match->hero1);
+      // fprintf (stderr, "4th %d\n", updated);
+      if (updated && test)
+        goto skip_rest;
+
+      // TODO animations here! (make walk animation) (make moved units
+      // walk)
+      updated = sinkAttacks3x1 (match->board1);
+      // fprintf (stderr, "5th %d\n", updated);
+      if (updated && test)
+        goto skip_rest;
+
+      // printBoard (match->board1);
+    }
   handleInput (match);
 
-  /* TODO this has to loop */
+skip_rest:
+}
 
-  // printBoard (match->board1);
-
-  sinkUnits (match->board1);
-
-  tagWalls (match->board1);
-  tagAttacks3x1 (match->board1);
-
-  // printBoard (match->board1);
-
-  makeWalls (match->board1, match->hero1);
-
-  // printBoard (match->board1);
-
-  sinkWalls (match->board1);
-
-  // printBoard (match->board1);
-
-  makeAttacks3x1 (match->board1, match->hero1);
-
-  // printBoard (match->board1);
-
-  sinkAttacks3x1 (match->board1);
-
-  printBoard (match->board1);
+void
+handleInputLocked (match *m)
+{
+  if (IsKeyPressed (KEY_LEFT) && m->cursorPosition.y > 0)
+    {
+      moveCursor (m, LEFT);
+    }
+  if (IsKeyPressed (KEY_RIGHT) && m->cursorPosition.y < m->board1->WIDTH - 1)
+    {
+      moveCursor (m, RIGHT);
+    }
+  if (IsKeyPressed (KEY_UP) && m->cursorPosition.x > 0)
+    {
+      moveCursor (m, UP);
+    }
+  if (IsKeyPressed (KEY_DOWN) && m->cursorPosition.x < m->board1->HIGHT - 1
+      && m->cursorPosition.x < getTopUnit (m->board1, m->cursorPosition.y).x)
+    {
+      moveCursor (m, DOWN);
+    }
+  if (IsKeyPressed (KEY_D))
+    m->debug = !m->debug;
 }
 
 void
@@ -114,6 +203,7 @@ handleInput (match *m)
       if (IsKeyPressed (KEY_TAB))
         {
           sendBackupUnits (m->board1, m->hero1);
+          setCursorTop (m);
         }
     }
   else
@@ -137,6 +227,10 @@ handleInput (match *m)
           succ = sendUnit (m->board1, m->selectedUnit, m->selectedPosition.y);
           if (succ)
             {
+              int x = getTopUnit (m->board1, m->selectedPosition.y).x;
+              unit *u = &m->board1->board[x][m->selectedPosition.y];
+              setUnitAnimationState (u, walking, ((WIDTH_C - x) * 32), 0,
+                                     true);
               m->hasUnitSelected = false;
               m->cursorPosition = m->selectedPosition;
               m->selectedPosition = (point){ -1, -1 };
@@ -161,22 +255,28 @@ moveCursor (match *m, direction d)
       break;
     case (LEFT):
       m->cursorPosition.y--;
-      m->cursorPosition.x = getTopUnit (m->board1, m->cursorPosition.y).x;
-      if (m->cursorPosition.x == -1)
-        m->cursorPosition.x = 0;
+      setCursorTop (m);
       break;
     case RIGHT:
       m->cursorPosition.y++;
-      m->cursorPosition.x = getTopUnit (m->board1, m->cursorPosition.y).x;
-      if (m->cursorPosition.x == -1)
-        m->cursorPosition.x = 0;
+      setCursorTop (m);
       break;
     }
 }
 
 void
+setCursorTop (match *m)
+{
+  m->cursorPosition.x = getTopUnit (m->board1, m->cursorPosition.y).x;
+  if (m->cursorPosition.x == -1)
+    m->cursorPosition.x = 0;
+}
+
+void
 deleteUnit (match *m)
 {
+  if (!m->board1->board[m->cursorPosition.x][m->cursorPosition.y].occupied)
+    return;
   if (canBeRemoved (
           &m->board1->board[m->cursorPosition.x][m->cursorPosition.y]))
     {
@@ -184,12 +284,19 @@ deleteUnit (match *m)
       bool res;
 
       top = getTopUnit (m->board1, m->cursorPosition.y);
-      res = removeUnit (m->board1, m->cursorPosition.x, m->cursorPosition.y);
+      setUnitAnimationState (
+          &m->board1->board[m->cursorPosition.x][m->cursorPosition.y], poof,
+          GetRandomValue (-2, 2), GetRandomValue (-2, 2), true);
 
-      if (res)
-        m->board1->backupUnits++;
-      else
-        return;
+      // res = removeUnit (m->board1, m->cursorPosition.x,
+      // m->cursorPosition.y);
+
+      m->board1->backupUnits++;
+
+      // if (res)
+      //   m->board1->backupUnits++;
+      // else
+      //   return;
 
       if (m->cursorPosition.x == top.x && m->cursorPosition.x > 0)
         m->cursorPosition.x--;

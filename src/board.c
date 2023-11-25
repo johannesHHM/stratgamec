@@ -96,8 +96,10 @@ sendUnit (board *b, unit u, int y)
 
   while (x >= 0 && !b->board[x][y].occupied)
     x--;
-
+  // TODO im settign this shit twice rn, kinda meh
+  setUnitAnimationState (&u, walking, (WIDTH_C - x + 1) * 32, 0, true);
   b->board[x + 1][y] = u;
+
   return true;
 }
 
@@ -112,12 +114,14 @@ sendUnitBackup (board *b, unit u, int y)
   while (x >= 0 && !b->board[x][y].occupied)
     x--;
 
+  setUnitAnimationState (&u, walking, (WIDTH_C + 1) * 32, 0, true);
   b->board[x + 1][y] = u;
   if (checkTagsNeeded (b))
     {
       b->board[x + 1][y].occupied = false;
       return false;
     }
+
   return true;
 }
 
@@ -133,10 +137,8 @@ sendBackupUnits (board *b, hero *h)
       bool response = false;
       while (!response)
         {
-          unit u = initUnitFromProto (&h->unitProtoList[rand () % 3],
-                                      randColor (), h->animationDb);
-          int random = rand () % b->WIDTH;
-          response = sendUnitBackup (b, u, random);
+          int y = rand () % b->WIDTH;
+          response = sendUnitBackup (b, getRandomUnit (h), y);
           if (response)
             b->backupUnits--;
         }
@@ -266,6 +268,13 @@ checkWall (board *b)
           if (!b->board[x][y].occupied || !b->board[x][y + 1].occupied
               || !b->board[x][y + 2].occupied)
             continue;
+          if (b->board[x][y].hasFormation || b->board[x][y + 1].hasFormation
+              || b->board[x][y + 2].hasFormation)
+            continue;
+          if ((int)b->board[x][y].type < 10
+              || (int)b->board[x][y + 1].type < 10
+              || (int)b->board[x][y + 2].type < 10)
+            continue;
           if (cmpUnits (&b->board[x][y], &b->board[x][y + 1])
               && cmpUnits (&b->board[x][y], &b->board[x][y + 2]))
             return true;
@@ -284,6 +293,10 @@ checkAttack3x1 (board *b)
           if (!b->board[x][y].occupied || !b->board[x + 1][y].occupied
               || !b->board[x + 2][y].occupied)
             continue;
+          if ((int)b->board[x][y].type < 10
+              || (int)b->board[x + 1][y].type < 10
+              || (int)b->board[x + 2][y].type < 10)
+            continue;
           if (cmpUnits (&b->board[x][y], &b->board[x + 1][y])
               && cmpUnits (&b->board[x][y], &b->board[x + 2][y])
               && !b->board[x][y].taggedAttack
@@ -299,7 +312,6 @@ checkAttack3x1 (board *b)
 bool
 checkTagsNeeded (board *b)
 {
-  return false;
   return checkWall (b) || checkAttack3x1 (b);
 }
 
@@ -312,6 +324,22 @@ checkFullBoard (board *b)
         return false;
     }
   return true;
+}
+
+bool
+checkLockedAnimations (board *b)
+{
+  for (int x = 0; x < b->HIGHT; ++x)
+    {
+      for (int y = 0; y < b->WIDTH; ++y)
+        {
+          if (!b->board[x][y].occupied)
+            continue;
+          if (b->board[x][y].animData.lockedAnimating)
+            return true;
+        }
+    }
+  return false;
 }
 
 bool
@@ -385,9 +413,10 @@ handleDoubleTag (board *b, int x, int y)
   return xFormStart;
 }
 
-void
+bool
 makeWalls (board *b, hero *h)
 {
+  bool updates = false;
   for (int y = 0; y < b->WIDTH; ++y)
     {
       for (int x = 0; x < b->HIGHT; ++x)
@@ -397,6 +426,7 @@ makeWalls (board *b, hero *h)
 
           if (b->board[x][y].taggedWall)
             {
+              updates = true;
               if (!b->board[x][y].taggedAttack)
                 {
                   removeUnit (b, x, y);
@@ -416,17 +446,21 @@ makeWalls (board *b, hero *h)
                       // TODO wall color?
                       wall = initUnitFromProto (&h->protoWall, 0,
                                                 h->animationDb);
+                      wall.backupValue = 0;
                       b->board[wallX][y] = wall;
                     }
                 }
             }
         }
     }
+  return updates;
 }
 
-void
+bool
 sinkWalls (board *b)
 {
+  bool updates = false;
+
   bool updated = true;
   while (updated)
     {
@@ -441,23 +475,34 @@ sinkWalls (board *b)
               if ((int)b->board[x][y].type > 9
                   && (int)b->board[x + 1][y].type < 10)
                 {
+                  updates = true;
+                  updateWalkingUnit (b, x + 1, y, 1);
+                  updateWalkingUnit (b, x, y, -1);
+
                   swapUnits (b, x, y, x + 1, y);
                   updated = true;
                 }
             }
         }
     }
+  return updates;
 }
 
-void
+bool
 makeAttacks3x1 (board *b, hero *h)
 {
+  bool updates = false;
+
   for (int y = 0; y < b->WIDTH; y++)
     {
       for (int x = 0; x < b->HIGHT - 2; x++)
         {
           if (!b->board[x][y].occupied || !b->board[x][y].firstFormation)
             continue;
+          if (b->board[x][y].hasFormation)
+            continue;
+
+          updates = true;
 
           formationPrototype3x1 *fp;
           formation3x1 *f;
@@ -477,11 +522,14 @@ makeAttacks3x1 (board *b, hero *h)
           b->board[x + 2][y].tagIcon = toupper (b->board[x + 2][y].icon);
         }
     }
+  return updates;
 }
 
-void
+bool
 sinkAttacks3x1 (board *b)
 {
+  bool updates = false;
+
   bool updated = true;
   while (updated)
     {
@@ -499,17 +547,23 @@ sinkAttacks3x1 (board *b)
               if (!b->board[x][y].hasFormation
                   && b->board[x + 1][y].hasFormation)
                 {
+                  updates = true;
+                  updateWalkingUnit (b, x + 1, y, 1);
+                  updateWalkingUnit (b, x, y, -1);
+
                   swapUnits (b, x, y, x + 1, y);
                   updated = true;
                 }
             }
         }
     }
+  return updates;
 }
 
-void
+bool
 sinkUnits (board *b)
 {
+  bool updates = false;
   bool updated = true;
   while (updated)
     {
@@ -520,10 +574,28 @@ sinkUnits (board *b)
             {
               if (!b->board[x][y].occupied && b->board[x + 1][y].occupied)
                 {
+                  updates = true;
+                  updateWalkingUnit (b, x + 1, y, 1);
                   moveUnit (b, x + 1, y, x, y);
                   updated = true;
                 }
             }
         }
+    }
+  return updates;
+}
+
+/* Direction where 1 is up and -1 is down */
+void
+updateWalkingUnit (board *b, int x, int y, int direction)
+{
+  if (b->board[x][y].animData.state == walking)
+    {
+      b->board[x][y].animData.offX += 32 * direction;
+    }
+  else
+    {
+      setUnitAnimationState (&b->board[x][y], walking, 32 * direction, 0,
+                             true);
     }
 }

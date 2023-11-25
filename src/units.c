@@ -62,6 +62,14 @@ initUnitFromProto (unitPrototype *up, colorG c, heroAnimationDatabase *hdb)
   u.animData.frameCount = 0;
   u.animData.sprite = 0;
   u.animData.state = idle;
+  u.animData.lockedAnimating = false;
+  u.animData.executeEnd = false;
+
+  // TODO maybe have untouchable bool, to protect while animating
+  u.animData.offX = 0;
+  u.animData.offY = 0;
+
+  u.backupValue = 1;
 
   return u;
 }
@@ -239,6 +247,19 @@ readWall (unitPrototype *protoWall, int *lvl1Wall, int *lvl2Wall,
 }
 
 void
+setUnitAnimationState (unit *u, unitAnimState s, int offX, int offY,
+                       bool locked)
+{
+  u->animData.frameCount = 0;
+  u->animData.sprite = 0;
+  u->animData.state = s;
+
+  u->animData.offX = offX;
+  u->animData.offY = offY;
+  u->animData.lockedAnimating = locked;
+}
+
+void
 tickUnitAnimationData (unit *u)
 {
   int frameLength, spritesLength;
@@ -251,6 +272,35 @@ tickUnitAnimationData (unit *u)
   if (u->animData.frameCount == 0)
     {
       u->animData.sprite = (u->animData.sprite + 1) % spritesLength;
+    }
+
+  if (u->animData.state == walking)
+    {
+      if (u->animData.offX > 0)
+        {
+          u->animData.offX -= WALK_SPEED;
+          if (u->animData.offX < 0)
+            u->animData.offX = 0;
+        }
+      else if (u->animData.offX < 0)
+        {
+          u->animData.offX += WALK_SPEED;
+          if (u->animData.offX > 0)
+            u->animData.offX = 0;
+        }
+      else
+        {
+          setUnitAnimationState (u, idle, 0, 0, false);
+        }
+    }
+  if (u->animData.state == poof)
+    {
+      if (u->animData.sprite == spritesLength - 1
+          && u->animData.frameCount == frameLength - 1)
+        {
+          u->animData.executeEnd = true;
+          u->occupied = false;
+        }
     }
 }
 
@@ -270,6 +320,7 @@ canBeMoved (unit *u)
     return false;
   return true;
 }
+
 bool
 canBeRemoved (unit *u)
 {

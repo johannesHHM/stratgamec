@@ -25,6 +25,9 @@ typedef struct Hero
   int maxUnits;
 
   heroAnimationDatabase *animationDb;
+
+  // 0 is red, 1 is green, 2 is blue
+  unitPrototype activeUnits[3];
 } hero;
 
 hero *newHero (heroType hc, char *n, int maxUnits);
@@ -32,6 +35,8 @@ hero *newHero (heroType hc, char *n, int maxUnits);
 void freeHero (hero *h);
 
 formationPrototype3x1 *getFormationPrototype (hero *hero, unitType type);
+
+unit getRandomUnit (hero *h);
 
 void printHero (hero *h);
 

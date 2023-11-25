@@ -38,9 +38,13 @@ match *newMatch (hero *hero1, hero *hero2);
 void freeMatch (match *m);
 
 void runMatch (match *match);
+
 void handleInput (match *m);
+void handleInputLocked (match *m);
 
 void moveCursor (match *m, direction d);
+void setCursorTop (match *m);
+
 void deleteUnit (match *m);
 
 #endif

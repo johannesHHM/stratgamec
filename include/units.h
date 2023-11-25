@@ -6,6 +6,8 @@
 
 #include <stdbool.h>
 
+#define WALK_SPEED 4
+
 typedef struct Formation3x1 formation3x1;
 
 typedef enum unitType
@@ -33,6 +35,7 @@ typedef struct Unit
   colorG color;
 
   int strength;
+  int backupValue;
 
   bool taggedWall;
   bool taggedAttack;
@@ -92,6 +95,9 @@ Texture2D *getUnitTexture (unit *u);
 
 bool canBeMoved (unit *u);
 bool canBeRemoved (unit *u);
+
+void setUnitAnimationState (unit *u, unitAnimState s, int offX, int offY,
+                            bool locked);
 
 void printUnit (unit *u);
 

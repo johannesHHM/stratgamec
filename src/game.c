@@ -8,15 +8,18 @@
 #include <stdio.h>
 #include <time.h>
 
+#define UNIT_SIZE 32
+#define ZOOM 4
+
 game
 initGame ()
 {
   game g;
-  g.screenWidth = 265 * 4;
-  g.screenHeight = 199 * 4;
+  g.screenWidth = (UNIT_SIZE * HIGHT_C * ZOOM);
+  g.screenHeight = (UNIT_SIZE * WIDTH_C * ZOOM);
 
   g.seed = time (NULL);
-  // g.seed = 1700452227;
+  g.seed = 1700843513;
 
   SetTraceLogLevel (LOG_ERROR);
   InitWindow (g.screenWidth, g.screenHeight, "temp_window_title");
@@ -32,10 +35,10 @@ runGame ()
 {
   game g = initGame ();
 
-  const int virtualScreenWidth = 265;
-  const int virtualScreenHeight = 199;
+  const int virtualScreenWidth = UNIT_SIZE * HIGHT_C;
+  const int virtualScreenHeight = UNIT_SIZE * WIDTH_C;
 
-  const int unitSize = 33;
+  const int unitSize = 32;
 
   printf ("\nRunning Main\n\n");
   printf ("seed: %d\n", g.seed);
@@ -68,8 +71,8 @@ runGame ()
   float cameraX = 0.0f;
   float cameraY = 0.0f;
 
-  hero *hero1 = newHero (paladin, "hero1", 30);
-  hero *hero2 = newHero (paladin, "hero2", 30);
+  hero *hero1 = newHero (paladin, "hero1", 25);
+  hero *hero2 = newHero (paladin, "hero2", 25);
 
   match *match;
   match = newMatch (hero1, hero2);
@@ -77,7 +80,11 @@ runGame ()
   // GAME LOOP
   while (!WindowShouldClose ())
     {
-      printf ("seed: %d\n", g.seed);
+      if (IsKeyPressed (KEY_P))
+        {
+          printf ("seed: %d\n", g.seed);
+          printBoard (match->board1);
+        }
 
       runMatch (match);
 
@@ -133,23 +140,31 @@ runGame ()
             {
               if (match->board1->board[x][y].occupied)
                 {
+
                   unit *u = &match->board1->board[x][y];
+
+                  int posY = 1 + (y * unitSize) + (u->animData.offY);
+                  int posX = 1 + (x * unitSize) + (u->animData.offX);
+
                   if (u->animationDb)
                     {
-                      tickUnitAnimationData (u);
+
                       Texture2D *text = getUnitTexture (u);
 
                       if (!u->hasFormation)
-                        DrawTexture (*text, 1 + (y * unitSize),
-                                     1 + (x * unitSize), WHITE);
+                        {
+                          DrawTexture (*text, posY, posX, WHITE);
+                        }
                       else
-                        DrawTexture (*text, 1 + (y * unitSize),
-                                     1 + (x * unitSize),
-                                     (Color){ 255, 255, 255, 120 });
+                        {
+                          DrawTexture (*text, posY, posX,
+                                       (Color){ 255, 255, 255, 120 });
+                        }
                     }
                   else
-                    DrawTexture (temp, 1 + (y * unitSize), 1 + (x * unitSize),
-                                 WHITE);
+                    {
+                      DrawTexture (temp, posY, posX, WHITE);
+                    }
                 }
             }
         }

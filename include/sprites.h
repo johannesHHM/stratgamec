@@ -8,7 +8,9 @@
 
 typedef enum AnimationState
 {
-  idle = 0
+  idle = 0,
+  walking = 1,
+  poof = 2
 } unitAnimState;
 
 typedef struct UnitAnimationStateData
@@ -16,6 +18,10 @@ typedef struct UnitAnimationStateData
   int sprite;     // index of sprite in animation
   int frameCount; // count of frames
   unitAnimState state;
+
+  int offX, offY;
+  bool lockedAnimating;
+  bool executeEnd;
 } unitAnimData;
 
 typedef struct Animation

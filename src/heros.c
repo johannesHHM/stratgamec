@@ -16,6 +16,10 @@ newHero (heroType hc, char *n, int maxUnits)
   readWall (&h->protoWall, &h->level1Wall, &h->level2Wall, &h->level3Wall, hc);
   h->maxUnits = maxUnits;
 
+  h->activeUnits[0] = h->unitProtoList[2];
+  h->activeUnits[1] = h->unitProtoList[0];
+  h->activeUnits[2] = h->unitProtoList[1];
+
   h->animationDb = readHeroAnimationDatabase (hc);
   return h;
 }
@@ -34,6 +38,13 @@ getFormationPrototype (hero *hero, unitType type)
     if (hero->formationProtoList[i].type == type)
       return &hero->formationProtoList[i];
   return NULL;
+}
+
+unit
+getRandomUnit (hero *h)
+{
+  int r = rand () % 3;
+  return initUnitFromProto (&h->activeUnits[r], (colorG)r, h->animationDb);
 }
 
 void
