@@ -5,6 +5,7 @@
 
 #include "raylib.h"
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -23,6 +24,13 @@ newMatch (hero *hero1, hero *hero2)
   m->selectedPosition = (point){ -1, -1 };
 
   m->debug = false;
+
+  for (int d = 0; d < 4; d++)
+    {
+      m->movingDirection[d] = false;
+      m->cooldownCounter[d] = HOLD_COOLDOWN;
+      m->pauseCounter[d] = HOLD_PAUSE;
+    }
 
   return m;
 }
@@ -78,6 +86,8 @@ skip:
   // usleep (50 * 1000);
 
   // handleInput (match);
+
+  updateHoldState (match);
 
   if (checkLockedAnimations (match->board1))
     {
@@ -139,23 +149,23 @@ skip_rest:
 void
 handleInputLocked (match *m)
 {
-  if (IsKeyPressed (KEY_LEFT) && m->cursorPosition.y > 0)
+  if (canMoveCursor (m, LEFT))
     {
       moveCursor (m, LEFT);
     }
-  if (IsKeyPressed (KEY_RIGHT) && m->cursorPosition.y < m->board1->WIDTH - 1)
+  else if (canMoveCursor (m, RIGHT))
     {
       moveCursor (m, RIGHT);
     }
-  if (IsKeyPressed (KEY_UP) && m->cursorPosition.x > 0)
+  else if (canMoveCursor (m, UP))
     {
       moveCursor (m, UP);
     }
-  if (IsKeyPressed (KEY_DOWN) && m->cursorPosition.x < m->board1->HIGHT - 1
-      && m->cursorPosition.x < getTopUnit (m->board1, m->cursorPosition.y).x)
+  else if (canMoveCursor (m, DOWN))
     {
       moveCursor (m, DOWN);
     }
+
   if (IsKeyPressed (KEY_D))
     m->debug = !m->debug;
 }
@@ -165,25 +175,23 @@ handleInput (match *m)
 {
   if (!m->hasUnitSelected)
     {
-      if (IsKeyPressed (KEY_LEFT) && m->cursorPosition.y > 0)
+      if (canMoveCursor (m, LEFT))
         {
           moveCursor (m, LEFT);
         }
-      if (IsKeyPressed (KEY_RIGHT)
-          && m->cursorPosition.y < m->board1->WIDTH - 1)
+      else if (canMoveCursor (m, RIGHT))
         {
           moveCursor (m, RIGHT);
         }
-      if (IsKeyPressed (KEY_UP) && m->cursorPosition.x > 0)
+      else if (canMoveCursor (m, UP))
         {
           moveCursor (m, UP);
         }
-      if (IsKeyPressed (KEY_DOWN) && m->cursorPosition.x < m->board1->HIGHT - 1
-          && m->cursorPosition.x
-                 < getTopUnit (m->board1, m->cursorPosition.y).x)
+      else if (canMoveCursor (m, DOWN))
         {
           moveCursor (m, DOWN);
         }
+
       if (IsKeyPressed (KEY_SPACE))
         {
           point p = getTopUnit (m->board1, m->cursorPosition.y);
@@ -196,11 +204,12 @@ handleInput (match *m)
               m->selectedPosition = p;
             }
         }
-      if (IsKeyPressed (KEY_LEFT_CONTROL) || IsKeyPressed (KEY_RIGHT_CONTROL))
+      else if (IsKeyPressed (KEY_LEFT_CONTROL)
+               || IsKeyPressed (KEY_RIGHT_CONTROL))
         {
           deleteUnit (m);
         }
-      if (IsKeyPressed (KEY_TAB))
+      else if (IsKeyPressed (KEY_TAB))
         {
           sendBackupUnits (m->board1, m->hero1);
           setCursorTop (m);
@@ -208,19 +217,22 @@ handleInput (match *m)
     }
   else
     {
-      if (IsKeyPressed (KEY_LEFT) && m->selectedPosition.y > 0)
+      if ((IsKeyPressed (KEY_LEFT) || m->pauseCounter[LEFT] == 0)
+          && !m->movingDirection[RIGHT] && m->selectedPosition.y > 0)
         {
           m->selectedPosition.y--;
           m->selectedPosition.x
               = getTopUnit (m->board1, m->selectedPosition.y).x + 1;
         }
-      if (IsKeyPressed (KEY_RIGHT)
-          && m->selectedPosition.y < m->board1->WIDTH - 1)
+      else if ((IsKeyPressed (KEY_RIGHT) || m->pauseCounter[RIGHT] == 0)
+               && !m->movingDirection[LEFT]
+               && m->selectedPosition.y < m->board1->WIDTH - 1)
         {
           m->selectedPosition.y++;
           m->selectedPosition.x
               = getTopUnit (m->board1, m->selectedPosition.y).x + 1;
         }
+
       if (IsKeyPressed (KEY_SPACE))
         {
           bool succ;
@@ -240,6 +252,65 @@ handleInput (match *m)
 
   if (IsKeyPressed (KEY_D))
     m->debug = !m->debug;
+}
+
+void
+updateHoldState (match *m)
+{
+  for (int d = 0; d < 4; d++)
+    {
+      if (IsKeyDown (KEY_DIRECTION_START + d) && m->movingDirection[d])
+        {
+          m->pauseCounter[d]--;
+          if (m->pauseCounter[d] < -1)
+            {
+              m->pauseCounter[d] = HOLD_PAUSE;
+            }
+        }
+      if (IsKeyDown (KEY_DIRECTION_START + d) && !m->movingDirection[d])
+        {
+          if (m->cooldownCounter[d] <= 0)
+            {
+              m->pauseCounter[d] = HOLD_PAUSE;
+              m->movingDirection[d] = true;
+            }
+          else
+            {
+              m->cooldownCounter[d]--;
+            }
+        }
+      if (!IsKeyDown (KEY_DIRECTION_START + d))
+        {
+          m->pauseCounter[d] = HOLD_PAUSE;
+          m->cooldownCounter[d] = HOLD_COOLDOWN;
+          m->movingDirection[d] = false;
+        }
+    }
+}
+
+bool
+canMoveCursor (match *m, direction d)
+{
+  switch (d)
+    {
+    case (UP):
+      return (IsKeyPressed (KEY_UP) || m->pauseCounter[UP] == 0)
+             && !m->movingDirection[DOWN] && m->cursorPosition.x > 0;
+    case (DOWN):
+      return (IsKeyPressed (KEY_DOWN) || m->pauseCounter[DOWN] == 0)
+             && !m->movingDirection[UP]
+             && m->cursorPosition.x < m->board1->HIGHT - 1
+             && m->cursorPosition.x
+                    < getTopUnit (m->board1, m->cursorPosition.y).x;
+    case (LEFT):
+      return (IsKeyPressed (KEY_LEFT) || m->pauseCounter[LEFT] == 0)
+             && !m->movingDirection[RIGHT] && m->cursorPosition.y > 0;
+    case RIGHT:
+      return (IsKeyPressed (KEY_RIGHT) || m->pauseCounter[RIGHT] == 0)
+             && !m->movingDirection[LEFT]
+             && m->cursorPosition.y < m->board1->WIDTH - 1;
+    }
+  return false;
 }
 
 void
@@ -281,7 +352,6 @@ deleteUnit (match *m)
           &m->board1->board[m->cursorPosition.x][m->cursorPosition.y]))
     {
       point top;
-      bool res;
 
       top = getTopUnit (m->board1, m->cursorPosition.y);
       setUnitAnimationState (
@@ -291,7 +361,9 @@ deleteUnit (match *m)
       // res = removeUnit (m->board1, m->cursorPosition.x,
       // m->cursorPosition.y);
 
-      m->board1->backupUnits++;
+      m->board1->backupUnits
+          += m->board1->board[m->cursorPosition.x][m->cursorPosition.y]
+                 .backupValue;
 
       // if (res)
       //   m->board1->backupUnits++;

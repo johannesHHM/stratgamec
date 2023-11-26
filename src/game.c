@@ -18,7 +18,7 @@ initGame ()
   g.screenHeight = UNIT_SIZE * WIDTH_C * ZOOM;
 
   g.seed = time (NULL);
-  g.seed = 1700843513;
+  // g.seed = 1700843513;
 
   SetTraceLogLevel (LOG_ERROR);
   InitWindow (g.screenWidth, g.screenHeight, "temp_window_title");
@@ -41,7 +41,7 @@ runGame ()
 
   const int unitSize = 20;
 
-  printf ("\nseed: %d\n\n", g.seed);
+  printf ("seed: %d\n", g.seed);
 
   const float virtualRatio = (float)g.screenWidth / (float)virtualScreenWidth;
 
@@ -185,7 +185,7 @@ runGame ()
 
       if (match->debug)
         {
-          DrawRectangle (5, 5, 260, 100, (Color){ 255, 255, 255, 200 });
+          DrawRectangle (5, 5, 340, 150, (Color){ 255, 255, 255, 200 });
 
           DrawText (TextFormat ("FPS: %d", GetFPS ()), 10, 10, 20, BLACK);
 
@@ -202,6 +202,24 @@ runGame ()
 
           DrawText (TextFormat ("backupUnits: %d", match->board1->backupUnits),
                     10, 70, 20, BLACK);
+
+          DrawText (TextFormat (
+                        "movingDirection: [ %d, %d, %d, %d]",
+                        match->movingDirection[0], match->movingDirection[1],
+                        match->movingDirection[2], match->movingDirection[3]),
+                    10, 90, 20, BLACK);
+
+          DrawText (TextFormat (
+                        "cooldownCounter: [ %d, %d, %d, %d]",
+                        match->cooldownCounter[0], match->cooldownCounter[1],
+                        match->cooldownCounter[2], match->cooldownCounter[3]),
+                    10, 110, 20, BLACK);
+
+          DrawText (TextFormat ("pauseCounter: [ %d, %d, %d, %d]",
+                                match->pauseCounter[0], match->pauseCounter[1],
+                                match->pauseCounter[2],
+                                match->pauseCounter[3]),
+                    10, 130, 20, BLACK);
         }
 
       EndDrawing ();

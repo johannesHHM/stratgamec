@@ -5,14 +5,16 @@
 #include "types.h"
 #include "units.h"
 
-#include <stdlib.h>
+#define KEY_DIRECTION_START 262
+#define HOLD_COOLDOWN 20
+#define HOLD_PAUSE 6
 
 typedef enum direction
 {
-  UP,
-  DOWN,
-  LEFT,
-  RIGHT
+  RIGHT = 0,
+  LEFT = 1,
+  DOWN = 2,
+  UP = 3
 } direction;
 
 typedef struct Match
@@ -29,6 +31,10 @@ typedef struct Match
   point selectedPosition;
   unit selectedUnit;
 
+  bool movingDirection[4];
+  int cooldownCounter[4];
+  int pauseCounter[4];
+
   // TODO note debug var
   bool debug;
 } match;
@@ -42,6 +48,9 @@ void runMatch (match *match);
 void handleInput (match *m);
 void handleInputLocked (match *m);
 
+void updateHoldState (match *m);
+
+bool canMoveCursor (match *m, direction d);
 void moveCursor (match *m, direction d);
 void setCursorTop (match *m);
 

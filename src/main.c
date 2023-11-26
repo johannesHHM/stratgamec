@@ -1,14 +1,11 @@
 #include "board.h"
 #include "game.h"
 #include "heros.h"
-#include "sprites.h"
 #include "units.h"
 
+#include <raylib.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <time.h>
 
 void
 testBoard ()
@@ -210,6 +207,7 @@ testAnim ()
   // freeHeroAnimationDatabase (db);
 
   freeHero (h);
+
   CloseWindow ();
 
   exit (0);
@@ -218,8 +216,8 @@ testAnim ()
 int
 main ()
 {
-  testAnim ();
-  //  testBoard ();
+  // testAnim ();
+  // testBoard ();
   runGame ();
   exit (0);
 }
