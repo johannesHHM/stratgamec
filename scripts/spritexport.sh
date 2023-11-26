@@ -16,13 +16,14 @@ for u in $units0; do
     while [ $c -ne 3 ]
     do
       aseprite -b units/0/$u/$s.ase \
-	--filename-format \
-	'{path}/../data/hero/0/animations/'$u'/'$s'/'$c'_{frame}.{extension}' \
-	--save-as output.png
+	      --filename-format \
+	      '{path}/../data/hero/0/animations/'$u'/'$s'/'$c'_{frame}.{extension}' \
+	      --save-as output.png
+
       aseprite -b units/poof.ase \
-	--filename-format \
-	'{path}/../data/hero/0/animations/'$u'/poof/'$c'_{frame}.{extension}' \
-	--save-as output.png
+	      --filename-format \
+	      '{path}/../data/hero/0/animations/'$u'/poof/'$c'_{frame}.{extension}' \
+	      --save-as output.png
       c=$(($c+1))
     done
   done 
