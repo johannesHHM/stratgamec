@@ -42,8 +42,6 @@ printHeroAnimationDatabase (heroAnimationDatabase *db)
   printf ("\n");
 }
 
-// TODO fix whatever the fuck this function is
-// TODO how to free all this shit, who to free all this shit
 heroAnimationDatabase *
 readHeroAnimationDatabase (int ht)
 {
@@ -68,7 +66,6 @@ readHeroAnimationDatabase (int ht)
   free (animationsFilePath);
 
   int read = 0;
-  // int records = 0;
 
   int unitAmount = 0;
   read = fscanf (animationsFile, "%d\n", &unitAmount);
@@ -110,9 +107,6 @@ readHeroAnimationDatabase (int ht)
 
           return NULL;
         }
-
-      // fprintf (stdout, "unitType: %d, unitName: %s, animAmount: %d\n",
-      //          unitType, unitName, animationAmount);
 
       unitAnimationDatabase *unitDatabase;
       unitDatabase = malloc (sizeof (unitAnimationDatabase));
@@ -165,8 +159,6 @@ readHeroAnimationDatabase (int ht)
 
               return NULL;
             }
-
-          // printf ("%s:%d\n", animationName, animationFrameAmount);
 
           int *frameCounts;
           frameCounts = malloc (animationFrameAmount * sizeof (int));
