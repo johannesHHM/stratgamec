@@ -18,8 +18,9 @@ newMatch (hero *hero1, hero *hero2)
 
   m->hero1 = hero1;
   m->hero2 = hero2;
-
-  m->cursorPosition = (point){ -1, 3 };
+  
+  // TODO cursor point start x?
+  m->cursorPosition = (point){ 20, 3 };
   m->hasUnitSelected = false;
   m->selectedPosition = (point){ -1, -1 };
 
@@ -295,19 +296,19 @@ canMoveCursor (match *m, direction d)
     {
     case (UP):
       return (IsKeyPressed (KEY_UP) || m->pauseCounter[UP] == 0)
-             && !m->movingDirection[DOWN] && m->cursorPosition.x > 0;
+             && !IsKeyDown (KEY_DOWN) && m->cursorPosition.x > 0;
     case (DOWN):
       return (IsKeyPressed (KEY_DOWN) || m->pauseCounter[DOWN] == 0)
-             && !m->movingDirection[UP]
+             && !IsKeyDown (KEY_UP)
              && m->cursorPosition.x < m->board1->HIGHT - 1
              && m->cursorPosition.x
                     < getTopUnit (m->board1, m->cursorPosition.y).x;
     case (LEFT):
       return (IsKeyPressed (KEY_LEFT) || m->pauseCounter[LEFT] == 0)
-             && !m->movingDirection[RIGHT] && m->cursorPosition.y > 0;
+             && !IsKeyDown (KEY_RIGHT) && m->cursorPosition.y > 0;
     case RIGHT:
       return (IsKeyPressed (KEY_RIGHT) || m->pauseCounter[RIGHT] == 0)
-             && !m->movingDirection[LEFT]
+             && !IsKeyDown (KEY_LEFT)
              && m->cursorPosition.y < m->board1->WIDTH - 1;
     }
   return false;

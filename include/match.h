@@ -6,7 +6,7 @@
 #include "units.h"
 
 #define KEY_DIRECTION_START 262
-#define HOLD_COOLDOWN 20
+#define HOLD_COOLDOWN 12
 #define HOLD_PAUSE 6
 
 typedef enum direction
