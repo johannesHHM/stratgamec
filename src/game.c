@@ -51,9 +51,12 @@ runGame ()
   Camera2D screenSpaceCamera = { 0 }; // Smoothing camera
   screenSpaceCamera.zoom = 1.0f;
 
+  Color brightness = { 230, 230, 230, 255 };
+
   RenderTexture2D target
       = LoadRenderTexture (virtualScreenWidth, virtualScreenHeight);
 
+  Texture2D trees = LoadTexture ("data/trees.png");
   Texture2D board = LoadTexture ("data/board-outline.png");
   Texture2D temp = LoadTexture ("data/temp-missing-unit.png");
 
@@ -106,7 +109,7 @@ runGame ()
       BeginMode2D (worldSpaceCamera);
 
       // Board background
-      DrawTexture (board, 0, 0, WHITE);
+      DrawTexture (board, 0, 0, (Color){ 215, 215, 215, 255 });
 
       // Draw cursor
       DrawRectangle (match->cursorPosition.y * unitSize + 1 + offset[0],
@@ -156,12 +159,12 @@ runGame ()
 
                       if (!u->hasFormation)
                         {
-                          DrawTexture (*text, posY, posX, WHITE);
+                          DrawTexture (*text, posY, posX, brightness);
                         }
                       else
                         {
                           DrawTexture (*text, posY, posX,
-                                       (Color){ 255, 255, 255, 120 });
+                                       (Color){ 55, 55, 55, 255 });
                         }
                     }
                   else
@@ -171,6 +174,8 @@ runGame ()
                 }
             }
         }
+
+      DrawTexture (trees, 0, 0, WHITE);
 
       EndMode2D ();
       EndTextureMode ();

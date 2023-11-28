@@ -18,7 +18,7 @@ newMatch (hero *hero1, hero *hero2)
 
   m->hero1 = hero1;
   m->hero2 = hero2;
-  
+
   // TODO cursor point start x?
   m->cursorPosition = (point){ 20, 3 };
   m->hasUnitSelected = false;
@@ -49,6 +49,8 @@ void
 runMatch (match *match)
 {
   bool skipRest = false;
+  // TODO probably refactor this thing
+  // Tick for poof animations, if any poofs, skip rest of animations
   for (int x = 0; x < 6; ++x)
     {
       for (int y = 0; y < 8; ++y)
@@ -60,7 +62,7 @@ runMatch (match *match)
           if (u->animData.state == poof)
             {
               tickUnitAnimationData (u);
-              skipRest = true;
+              skipRest = false;
             }
         }
     }
@@ -105,42 +107,31 @@ skip:
       // TODO animate when remove units (how to play the naimation when the
       // unit is gone hmmm)
 
+      // TODO maybe execute these things if (checkTagsNedded and
+      // checkSinkNeeded)?
       // TODO animations here! (walking animation)
       updated = sinkUnits (match->board1);
-      // fprintf (stderr, "1st %d\n", updated);
       if (updated)
         goto skip_rest;
 
       tagWalls (match->board1);
       tagAttacks3x1 (match->board1);
 
-      // TODO animations here! (make wall animation)
       updated = makeWalls (match->board1, match->hero1);
-      // fprintf (stderr, "2nd %d\n", updated);
       if (updated && test)
         goto skip_rest;
 
-      // TODO animations here! (make wall walking lul) (make moved units
-      // walk)
       updated = sinkWalls (match->board1);
-      // fprintf (stderr, "3rd %d\n", updated);
       if (updated && test)
         goto skip_rest;
 
-      // TODO animations here! (make attack animation)
       updated = makeAttacks3x1 (match->board1, match->hero1);
-      // fprintf (stderr, "4th %d\n", updated);
       if (updated && test)
         goto skip_rest;
 
-      // TODO animations here! (make walk animation) (make moved units
-      // walk)
       updated = sinkAttacks3x1 (match->board1);
-      // fprintf (stderr, "5th %d\n", updated);
       if (updated && test)
         goto skip_rest;
-
-      // printBoard (match->board1);
     }
   handleInput (match);
 
