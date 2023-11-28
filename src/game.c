@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#define ZOOM 5
+#define ZOOM 4
 
 game
 initGame ()
