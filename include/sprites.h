@@ -30,6 +30,7 @@ typedef struct Animation
   Texture2D *sprites; // len of spritesLen, reference to all sprites in order
   int *frameCounts;   // len of spritesLen, how long to display sprite
                       // ex: [7, 7, 5, 7]
+  int offX, offY;
 } animation;
 
 typedef struct UnitAnimationDatabase // for 1 unit type

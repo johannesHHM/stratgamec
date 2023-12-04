@@ -145,12 +145,17 @@ runGame ()
               if (match->board1->board[x][y].occupied)
                 {
 
-                  unit *u = &match->board1->board[x][y];
-
+                  unit *u;
                   int posY, posX;
+                  point animOffset;
 
-                  posY = 1 + (y * unitSize) + (u->animData.offY) + offset[0];
-                  posX = 1 + (x * unitSize) + (u->animData.offX) + offset[1];
+                  u = &match->board1->board[x][y];
+                  animOffset = getUnitAnimationOffset (u);
+
+                  posY = 1 + (y * unitSize) + (u->animData.offY) + offset[0]
+                         - animOffset.x;
+                  posX = 1 + (x * unitSize) + (u->animData.offX) + offset[1]
+                         - animOffset.y;
 
                   if (u->animationDb)
                     {

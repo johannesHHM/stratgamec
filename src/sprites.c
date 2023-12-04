@@ -141,14 +141,16 @@ readHeroAnimationDatabase (int ht)
 
       char animationName[20];
       int animationFrameAmount;
+      int animationOffX, animationOffY;
 
       for (int animationCount = 0; animationCount < animationAmount;
            animationCount++)
         {
-          read = fscanf (animationDataFile, "%19[^:]:%d;", animationName,
-                         &animationFrameAmount);
+          read
+              = fscanf (animationDataFile, "%19[^:]:%d;%dx%d;", animationName,
+                        &animationFrameAmount, &animationOffX, &animationOffY);
 
-          if (read != 2)
+          if (read != 4)
             {
               fprintf (stderr,
                        "[ERROR] could not parse animationData file\n"
@@ -188,6 +190,8 @@ readHeroAnimationDatabase (int ht)
               animation *currentAnim;
               currentAnim = malloc (sizeof (animation));
               currentAnim->spritesLen = animationFrameAmount;
+              currentAnim->offX = animationOffX;
+              currentAnim->offY = animationOffY;
 
               currentAnim->frameCounts
                   = malloc (currentAnim->spritesLen * sizeof (int));

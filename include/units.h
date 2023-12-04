@@ -3,6 +3,7 @@
 
 #include "colors.h"
 #include "sprites.h"
+#include "types.h"
 
 #include <stdbool.h>
 
@@ -94,6 +95,7 @@ void freeFormation3x1 (formation3x1 *f);
 
 void tickUnitAnimationData (unit *u);
 Texture2D *getUnitTexture (unit *u);
+point getUnitAnimationOffset (unit *u);
 
 bool canBeMoved (unit *u);
 bool canBeRemoved (unit *u);

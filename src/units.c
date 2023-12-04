@@ -1,5 +1,6 @@
 #include "units.h"
 #include "sprites.h"
+#include "types.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -309,6 +310,14 @@ getUnitTexture (unit *u)
 {
   return &u->animationDb->animations[u->animData.state][u->color]
               ->sprites[u->animData.sprite];
+}
+
+point
+getUnitAnimationOffset (unit *u)
+{
+  return (
+      point){ u->animationDb->animations[u->animData.state][u->color]->offX,
+              u->animationDb->animations[u->animData.state][u->color]->offY };
 }
 
 bool
